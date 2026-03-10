@@ -1,8 +1,9 @@
 package com.deyhayenterprise.mazeradmintemplate.controller;
 
+import java.security.Principal;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,14 @@ public class WebController {
 
     @GetMapping(value = { "/", "/index", "/index.html" })
 	public String indexMain(Model model) {
-		log.info("web controller class paramaters as model");
-
-        return "index";
-    }    	
+		log.info("dashboard principal");
+		model.addAttribute("pageHeading", "Dashboard");
+		model.addAttribute("pageSubtitle", "Resumen general del sistema de ventas");
+		model.addAttribute("totalModules", 7);
+		model.addAttribute("securedRoutes", 21);
+		model.addAttribute("activeRoles", 4);
+		return "index";
+    }
 
 	@GetMapping("/application-chat")
 	public String applicationChat() {
@@ -56,7 +61,10 @@ public class WebController {
 	}
 
 	@GetMapping("/auth-login")
-	public String authLogin() {
+	public String authLogin(Principal principal) {
+		if (principal != null) {
+			return "redirect:/index";
+		}
 		return "auth-login";
 	}
 

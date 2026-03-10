@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body th:replace="~{fragments/layout :: layout(
     'Gestión de Permisos - Configuración',
     ${pageHeading},
@@ -8,51 +8,49 @@
 )}">
 <section class="section">
     <div class="card">
-        <div class="card-header">
-            <h4 class="card-title">Administrar Permisos por Rol</h4>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="card-title mb-0">Administrar permisos por rol</h4>
+            <span class="badge bg-light-primary" th:text="${#lists.size(roles)} + ' roles disponibles'">0 roles</span>
         </div>
         <div class="card-body">
-            <div class="row mb-4">
+            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+            <form method="get" th:action="@{/config/permisos}" class="row g-3 align-items-end mb-4">
                 <div class="col-md-6">
-                    <label for="rol" class="form-label">Seleccionar Rol</label>
-                    <select class="form-select" id="rol">
-                        <option selected>Seleccionar rol</option>
-                        <option>Administrador</option>
-                        <option>Vendedor</option>
-                        <option>Bodeguero</option>
-                        <option>Contador</option>
+                    <label for="roleId" class="form-label">Seleccionar rol</label>
+                    <select class="form-select" id="roleId" name="roleId" onchange="this.form.submit()">
+                        <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.nombre}" th:selected="${role.id == selectedRoleId}">Administrador</option>
                     </select>
                 </div>
-            </div>
-            <h5>Permisos</h5>
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th>Módulo</th>
-                        <th>Ver</th>
-                        <th>Crear</th>
-                        <th>Editar</th>
-                        <th>Eliminar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Ventas</td>
-                        <td><input type="checkbox" checked></td>
-                        <td><input type="checkbox" checked></td>
-                        <td><input type="checkbox" checked></td>
-                        <td><input type="checkbox"></td>
-                    </tr>
-                    <tr>
-                        <td>Inventario</td>
-                        <td><input type="checkbox" checked></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="checkbox"></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button class="btn btn-primary mt-3">Guardar Permisos</button>
+            </form>
+
+            <form th:if="${selectedRoleId != null}" th:action="@{'/config/permisos/' + ${selectedRoleId}}" th:object="${permissionForm}" method="post">
+                <div class="row" th:each="group : ${permissionCatalog}">
+                    <div class="col-12">
+                        <div class="card border shadow-none mb-3">
+                            <div class="card-header">
+                                <h5 class="mb-0" th:text="${group.menuName()}">Ventas</h5>
+                                <small class="text-muted" th:text="${group.section()}">Sistema de Ventas</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6 col-xl-4" th:each="option : ${group.options()}">
+                                        <div class="form-check border rounded p-3 h-100">
+                                            <input class="form-check-input" type="checkbox" th:field="*{optionIds}" th:value="${option.id}" th:id="'option-' + ${option.id}">
+                                            <label class="form-check-label ms-2" th:for="'option-' + ${option.id}">
+                                                <span class="fw-bold d-block" th:text="${option.name()}">Nueva venta</span>
+                                                <small class="text-muted d-block" th:text="${option.url()}">/ventas/nueva</small>
+                                                <small class="text-muted" th:text="${option.description()}">Registrar venta</small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar permisos</button>
+            </form>
         </div>
     </div>
 </section>
