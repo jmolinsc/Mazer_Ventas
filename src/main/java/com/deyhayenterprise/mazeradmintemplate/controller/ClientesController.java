@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -81,5 +82,67 @@ public class ClientesController {
         model.addAttribute("pageSubtitle", "Administrar categorías de clientes");
         return "clientes/categorias";
     }
-}
 
+    @GetMapping("/editar/{id}")
+    public String editarCliente(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            model.addAttribute("pageHeading", "Editar Cliente");
+            model.addAttribute("pageSubtitle", "Actualizar datos del cliente");
+            model.addAttribute("categorias", CATEGORIAS);
+            model.addAttribute("clienteId", id);
+            if (!model.containsAttribute("clienteForm")) {
+                ClienteCreateForm form = new ClienteCreateForm();
+                var cliente = clienteService.findActiveById(id);
+                form.setNombre(cliente.getNombre());
+                form.setEmail(cliente.getEmail());
+                form.setTelefono(cliente.getTelefono());
+                form.setCategoria(cliente.getCategoria());
+                form.setDireccion(cliente.getDireccion());
+                model.addAttribute("clienteForm", form);
+            }
+            return "clientes/editar";
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/clientes/listar";
+        }
+    }
+
+    @PostMapping("/editar/{id}")
+    public String actualizarCliente(@PathVariable Long id,
+                                    @Valid @ModelAttribute("clienteForm") ClienteCreateForm clienteForm,
+                                    BindingResult bindingResult,
+                                    RedirectAttributes redirectAttributes,
+                                    Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageHeading", "Editar Cliente");
+            model.addAttribute("pageSubtitle", "Actualizar datos del cliente");
+            model.addAttribute("categorias", CATEGORIAS);
+            model.addAttribute("clienteId", id);
+            return "clientes/editar";
+        }
+
+        try {
+            clienteService.update(id, clienteForm);
+            redirectAttributes.addFlashAttribute("successMessage", "Cliente actualizado correctamente.");
+            return "redirect:/clientes/listar";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("pageHeading", "Editar Cliente");
+            model.addAttribute("pageSubtitle", "Actualizar datos del cliente");
+            model.addAttribute("categorias", CATEGORIAS);
+            model.addAttribute("clienteId", id);
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "clientes/editar";
+        }
+    }
+
+    @PostMapping("/eliminar/{id}")
+    public String eliminarCliente(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            clienteService.delete(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Cliente eliminado correctamente.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/clientes/listar";
+    }
+}

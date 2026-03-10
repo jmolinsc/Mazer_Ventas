@@ -119,6 +119,88 @@ class BusinessFlowIntegrationTests {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Stock insuficiente para registrar la venta.")));
     }
 
+    @Test
+    void shouldUpdateClienteAndProducto() throws Exception {
+        MockHttpSession session = login("admin", "Admin123*");
+
+        Cliente cliente = clienteRepository.findByEmailIgnoreCase("clientea@mazer.local").orElseThrow();
+        Producto producto = productoRepository.findByCodigoIgnoreCase("P-001").orElseThrow();
+
+        mockMvc.perform(post("/clientes/editar/" + cliente.getId()).session(session)
+                        .param("nombre", "Cliente A Editado")
+                        .param("email", "clientea@mazer.local")
+                        .param("telefono", "555-9999")
+                        .param("categoria", "Premium")
+                        .param("direccion", "Nueva direccion"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/clientes/listar"));
+
+        mockMvc.perform(post("/productos/editar/" + producto.getId()).session(session)
+                        .param("nombre", "Laptop Pro 14 Plus")
+                        .param("codigo", "P-001")
+                        .param("categoria", "Electronica")
+                        .param("precio", "1300.00")
+                        .param("stock", "18")
+                        .param("unidad", "Unidad"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/productos/listar"));
+
+        mockMvc.perform(get("/clientes/listar").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Cliente A Editado")));
+
+        mockMvc.perform(get("/productos/listar").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Laptop Pro 14 Plus")));
+    }
+
+    @Test
+    void shouldSoftDeleteClienteAndProducto() throws Exception {
+        MockHttpSession session = login("admin", "Admin123*");
+        String suffix = String.valueOf(System.currentTimeMillis());
+
+        String email = "delete." + suffix + "@mazer.local";
+        String codigo = "DEL_" + suffix;
+
+        mockMvc.perform(post("/clientes/nuevo").session(session)
+                        .param("nombre", "Cliente Delete " + suffix)
+                        .param("email", email)
+                        .param("telefono", "555-0000")
+                        .param("categoria", "VIP")
+                        .param("direccion", "Direccion test"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/clientes/listar"));
+
+        mockMvc.perform(post("/productos/nuevo").session(session)
+                        .param("nombre", "Producto Delete " + suffix)
+                        .param("codigo", codigo)
+                        .param("categoria", "Oficina")
+                        .param("precio", "50.00")
+                        .param("stock", "5")
+                        .param("unidad", "Unidad"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/productos/listar"));
+
+        Cliente cliente = clienteRepository.findByEmailIgnoreCase(email).orElseThrow();
+        Producto producto = productoRepository.findByCodigoIgnoreCase(codigo).orElseThrow();
+
+        mockMvc.perform(post("/clientes/eliminar/" + cliente.getId()).session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/clientes/listar"));
+
+        mockMvc.perform(post("/productos/eliminar/" + producto.getId()).session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/productos/listar"));
+
+        mockMvc.perform(get("/clientes/listar").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("Cliente Delete " + suffix))));
+
+        mockMvc.perform(get("/productos/listar").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("Producto Delete " + suffix))));
+    }
+
     private MockHttpSession login(String username, String password) throws Exception {
         MvcResult result = mockMvc.perform(post("/auth-login")
                         .param("username", username)
@@ -130,4 +212,3 @@ class BusinessFlowIntegrationTests {
         return (MockHttpSession) result.getRequest().getSession(false);
     }
 }
-

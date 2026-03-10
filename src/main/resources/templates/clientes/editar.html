@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body th:replace="~{fragments/layout :: layout(
+    'Editar Cliente - Sistema de Ventas',
+    ${pageHeading},
+    ${pageSubtitle},
+    ~{::section}
+)}">
+<section class="section">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Editar Cliente</h4>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+            <form method="post" th:action="@{'/clientes/editar/' + ${clienteId}}" th:object="${clienteForm}">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" th:field="*{nombre}">
+                            <small class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" th:field="*{email}">
+                            <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="telefono" class="form-label">Telefono</label>
+                            <input type="tel" class="form-control" id="telefono" th:field="*{telefono}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="categoria" class="form-label">Categoria</label>
+                            <select class="form-select" id="categoria" th:field="*{categoria}">
+                                <option value="">Seleccionar categoria</option>
+                                <option th:each="categoria : ${categorias}" th:value="${categoria}" th:text="${categoria}"></option>
+                            </select>
+                            <small class="text-danger" th:if="${#fields.hasErrors('categoria')}" th:errors="*{categoria}"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="direccion" class="form-label">Direccion</label>
+                    <textarea class="form-control" id="direccion" rows="2" th:field="*{direccion}"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Actualizar Cliente</button>
+                <a th:href="@{/clientes/listar}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</section>
+</body>
+</html>
+

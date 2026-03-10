@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -80,5 +81,69 @@ public class ProductosController {
         model.addAttribute("pageHeading", "Categorías de Productos");
         model.addAttribute("pageSubtitle", "Administrar categorías");
         return "productos/categorias";
+    }
+
+    @GetMapping("/editar/{id}")
+    public String editarProducto(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            model.addAttribute("pageHeading", "Editar Producto");
+            model.addAttribute("pageSubtitle", "Actualizar datos del producto");
+            model.addAttribute("categorias", CATEGORIAS);
+            model.addAttribute("productoId", id);
+            if (!model.containsAttribute("productoForm")) {
+                ProductoCreateForm form = new ProductoCreateForm();
+                var producto = productoService.findActiveById(id);
+                form.setNombre(producto.getNombre());
+                form.setCodigo(producto.getCodigo());
+                form.setCategoria(producto.getCategoria());
+                form.setPrecio(producto.getPrecio());
+                form.setStock(producto.getStock());
+                form.setUnidad(producto.getUnidad());
+                model.addAttribute("productoForm", form);
+            }
+            return "productos/editar";
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/productos/listar";
+        }
+    }
+
+    @PostMapping("/editar/{id}")
+    public String actualizarProducto(@PathVariable Long id,
+                                     @Valid @ModelAttribute("productoForm") ProductoCreateForm productoForm,
+                                     BindingResult bindingResult,
+                                     RedirectAttributes redirectAttributes,
+                                     Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageHeading", "Editar Producto");
+            model.addAttribute("pageSubtitle", "Actualizar datos del producto");
+            model.addAttribute("categorias", CATEGORIAS);
+            model.addAttribute("productoId", id);
+            return "productos/editar";
+        }
+
+        try {
+            productoService.update(id, productoForm);
+            redirectAttributes.addFlashAttribute("successMessage", "Producto actualizado correctamente.");
+            return "redirect:/productos/listar";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("pageHeading", "Editar Producto");
+            model.addAttribute("pageSubtitle", "Actualizar datos del producto");
+            model.addAttribute("categorias", CATEGORIAS);
+            model.addAttribute("productoId", id);
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "productos/editar";
+        }
+    }
+
+    @PostMapping("/eliminar/{id}")
+    public String eliminarProducto(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            productoService.delete(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Producto eliminado correctamente.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/productos/listar";
     }
 }

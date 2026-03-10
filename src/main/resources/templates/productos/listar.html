@@ -14,6 +14,7 @@
         </div>
         <div class="card-body">
             <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
             <table class="table table-striped" id="table1">
                 <thead>
                     <tr>
@@ -23,6 +24,7 @@
                         <th>Precio</th>
                         <th>Stock</th>
                         <th>Unidad</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -33,6 +35,12 @@
                         <td th:text="${#numbers.formatDecimal(producto.precio, 1, 'POINT', 2, 'COMMA')}">0.00</td>
                         <td th:text="${producto.stock}">0</td>
                         <td th:text="${producto.unidad}">Unidad</td>
+                        <td class="d-flex gap-2">
+                            <a class="btn btn-warning btn-sm" th:href="@{'/productos/editar/' + ${producto.id}}">Editar</a>
+                            <form method="post" th:action="@{'/productos/eliminar/' + ${producto.id}}" onsubmit="return confirm('Eliminar producto?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                        </td>
                     </tr>
                 </tbody>
             </table>

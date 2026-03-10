@@ -14,14 +14,16 @@
         </div>
         <div class="card-body">
             <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
             <table class="table table-striped" id="table1">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
                         <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>Categoría</th>
+                        <th>Telefono</th>
+                        <th>Categoria</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -31,6 +33,12 @@
                         <td th:text="${cliente.email}">cliente@email.com</td>
                         <td th:text="${cliente.telefono}">555-1234</td>
                         <td th:text="${cliente.categoria}">VIP</td>
+                        <td class="d-flex gap-2">
+                            <a class="btn btn-warning btn-sm" th:href="@{'/clientes/editar/' + ${cliente.id}}">Editar</a>
+                            <form method="post" th:action="@{'/clientes/eliminar/' + ${cliente.id}}" onsubmit="return confirm('Eliminar cliente?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                        </td>
                     </tr>
                 </tbody>
             </table>
