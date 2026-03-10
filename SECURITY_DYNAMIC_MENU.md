@@ -79,7 +79,15 @@ AppMenu ←── menu_id ──────── MenuOption
 |------------------|--------------------------------------------------------------------|
 | `MenuService`    | Construye `List<SidebarSectionView>` agrupadas por sección y menú  |
 | `AppUserService` | CRUD de usuarios: listar, buscar, crear con roles asignados        |
-| `RoleService`    | CRUD de roles: listar, asignar/quitar opciones de menú             |
+| `RoleService`    | CRUD de roles: listar, **crear** y asignar/quitar opciones de menú |
+
+### Formularios web (`web/form/`)
+
+| Clase                     | Uso                                                        |
+|--------------------------|------------------------------------------------------------|
+| `UserCreateForm`         | Alta de usuario con validaciones                           |
+| `RoleCreateForm`         | Alta de rol (`codigo`, `nombre`, `descripcion`)            |
+| `RolePermissionUpdateForm` | Actualización de permisos por rol                         |
 
 ### DTOs del sidebar (`service/dto/`)
 
@@ -104,7 +112,7 @@ AppMenu ←── menu_id ──────── MenuOption
 | Clase            | Rutas manejadas                                         |
 |------------------|---------------------------------------------------------|
 | `WebController`  | `/`, `/index`, `/auth-login`, todas las rutas de layout |
-| `ConfigController` | `/config/empresa`, `/config/usuarios`, `/config/permisos` |
+| `ConfigController` | `/config/empresa`, `/config/usuarios`, `/config/permisos`, `POST /config/permisos/roles` |
 
 ### Advice global (`web/GlobalModelAttributes`)
 
@@ -198,7 +206,7 @@ Al arrancar por primera vez (cuando las tablas están vacías) se crean automát
 |----------------------|----------------------------|------------------------------------------------|
 | `/config/empresa`    | `config/empresa.html`      | Datos corporativos + estado del módulo         |
 | `/config/usuarios`   | `config/usuarios.html`     | Listado real de usuarios + formulario de alta  |
-| `/config/permisos`   | `config/permisos.html`     | Asignación de opciones por rol con checkboxes  |
+| `/config/permisos`   | `config/permisos.html`     | Asignación de opciones por rol + **creación de roles** |
 
 ---
 
@@ -246,4 +254,3 @@ Para agregar un nuevo módulo:
 5. **Crear las vistas Thymeleaf** usando el fragmento `fragments/layout :: layout(...)`.
 
 No se requiere modificar nada en `SecurityConfig`, `DatabaseMenuAuthorizationManager` ni `MenuService`.
-

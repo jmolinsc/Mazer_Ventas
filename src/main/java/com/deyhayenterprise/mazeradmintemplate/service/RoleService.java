@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -80,5 +81,30 @@ public class RoleService {
         role.getOptions().addAll(options);
         roleRepository.save(role);
     }
-}
 
+    @Transactional
+    public Role createRole(String codigoInput, String nombreInput, String descripcionInput) {
+        String codigo = normalizeCode(codigoInput);
+        String nombre = nombreInput.trim();
+        String descripcion = descripcionInput == null ? null : descripcionInput.trim();
+
+        if (roleRepository.findByCodigoIgnoreCase(codigo).isPresent()) {
+            throw new IllegalArgumentException("Ya existe un rol con ese código.");
+        }
+
+        Role role = new Role();
+        role.setCodigo(codigo);
+        role.setNombre(nombre);
+        role.setDescripcion(descripcion == null || descripcion.isEmpty() ? null : descripcion);
+        role.setActivo(true);
+
+        return roleRepository.save(role);
+    }
+
+    private String normalizeCode(String rawCode) {
+        return rawCode.trim()
+                .replace('-', '_')
+                .replace(' ', '_')
+                .toUpperCase(Locale.ROOT);
+    }
+}

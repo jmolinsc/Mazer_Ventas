@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.deyhayenterprise.mazeradmintemplate.service.AppUserService;
 import com.deyhayenterprise.mazeradmintemplate.service.RoleService;
+import com.deyhayenterprise.mazeradmintemplate.web.form.RoleCreateForm;
 import com.deyhayenterprise.mazeradmintemplate.web.form.RolePermissionUpdateForm;
 import com.deyhayenterprise.mazeradmintemplate.web.form.UserCreateForm;
 
@@ -85,12 +86,45 @@ public class ConfigController {
         model.addAttribute("permissionCatalog", roleService.buildPermissionCatalog());
         model.addAttribute("selectedRoleId", selectedRoleId);
         model.addAttribute("selectedOptionIds", roleService.findAssignedOptionIds(selectedRoleId));
+        if (!model.containsAttribute("roleForm")) {
+            model.addAttribute("roleForm", new RoleCreateForm());
+        }
         if (!model.containsAttribute("permissionForm")) {
             RolePermissionUpdateForm form = new RolePermissionUpdateForm();
             form.setOptionIds(roleService.findAssignedOptionIds(selectedRoleId));
             model.addAttribute("permissionForm", form);
         }
         return "config/permisos";
+    }
+
+    @PostMapping("/permisos/roles")
+    public String crearRol(@Valid @ModelAttribute("roleForm") RoleCreateForm roleForm,
+                           BindingResult bindingResult,
+                           RedirectAttributes redirectAttributes,
+                           Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageHeading", "Gestión de Permisos");
+            model.addAttribute("pageSubtitle", "Configurar permisos de usuarios por rol");
+            model.addAttribute("roles", roleService.findAllRoles());
+            model.addAttribute("permissionCatalog", roleService.buildPermissionCatalog());
+            model.addAttribute("selectedRoleId", resolveRoleId(null));
+            model.addAttribute("selectedOptionIds", roleService.findAssignedOptionIds(resolveRoleId(null)));
+            if (!model.containsAttribute("permissionForm")) {
+                model.addAttribute("permissionForm", new RolePermissionUpdateForm());
+            }
+            return "config/permisos";
+        }
+
+        try {
+            roleService.createRole(roleForm.getCodigo(), roleForm.getNombre(), roleForm.getDescripcion());
+            redirectAttributes.addFlashAttribute("successMessage", "Rol creado correctamente.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.roleForm", bindingResult);
+            redirectAttributes.addFlashAttribute("roleForm", roleForm);
+        }
+
+        return "redirect:/config/permisos";
     }
 
     @PostMapping("/permisos/{roleId}")

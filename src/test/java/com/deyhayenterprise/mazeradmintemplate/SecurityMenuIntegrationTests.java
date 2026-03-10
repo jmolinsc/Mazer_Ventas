@@ -61,6 +61,38 @@ class SecurityMenuIntegrationTests {
                 .andExpect(redirectedUrl("/auth-login?error=true"));
     }
 
+    @Test
+    void adminShouldCreateRoleFromPermissionsScreen() throws Exception {
+        MockHttpSession session = login("admin", "Admin123*");
+
+        mockMvc.perform(post("/config/permisos/roles").session(session)
+                        .param("codigo", "SUPERVISOR_TEST")
+                        .param("nombre", "Supervisor Test")
+                        .param("descripcion", "Rol creado desde prueba"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/config/permisos"));
+
+        mockMvc.perform(get("/config/permisos").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Supervisor Test")));
+    }
+
+    @Test
+    void shouldRejectDuplicateRoleCode() throws Exception {
+        MockHttpSession session = login("admin", "Admin123*");
+
+        mockMvc.perform(post("/config/permisos/roles").session(session)
+                        .param("codigo", "ADMIN")
+                        .param("nombre", "Administrador Clonado")
+                        .param("descripcion", "No debe crearse"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/config/permisos"));
+
+        mockMvc.perform(get("/config/permisos").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Ya existe un rol con ese código.")));
+    }
+
     private MockHttpSession login(String username, String password) throws Exception {
         MvcResult result = mockMvc.perform(post("/auth-login")
                         .param("username", username)
