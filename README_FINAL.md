@@ -2,7 +2,14 @@
 
 ## 📊 Estado Final del Proyecto
 
-✅ **COMPLETADO**: Sistema de Ventas funcional con DataTables implementadas en todas las vistas de listado.
+✅ **COMPLETADO**: Frontend + seguridad dinámica + backend persistente para clientes, productos y ventas en PostgreSQL.
+
+### ✅ Actualización Marzo 2026
+- Persistencia real con JPA (`Cliente`, `Producto`, `Venta`) y repositorios Spring Data.
+- Formularios funcionales con validaciones en `/clientes/nuevo`, `/productos/nuevo`, `/ventas/nueva`.
+- Listados conectados a BD en `/clientes/listar`, `/productos/listar`, `/ventas/listar`.
+- Seguridad con Spring Security + permisos dinámicos desde base de datos.
+- Seed inicial de seguridad y datos de negocio para pruebas locales.
 
 ---
 
@@ -78,7 +85,9 @@ ConfigController
 ### Backend
 - ✅ 7 Controllers con rutas mapeadas
 - ✅ Model attributes inyectados en vistas
-- ✅ Estructura preparada para JPA/BD
+- ✅ Entidades JPA + repositorios + servicios para flujo de ventas
+- ✅ PostgreSQL local configurado en `application.properties`
+- ✅ Menú y permisos dinámicos con Spring Security
 
 ---
 
@@ -225,30 +234,19 @@ GET /config/permisos     Permisos
 
 ## 💡 Próximos Pasos Recomendados
 
-### Fase 2: Base de Datos
-- [ ] Crear modelos JPA (Cliente, Producto, Venta, etc.)
-- [ ] Implementar repositorios Spring Data
-- [ ] Configurar H2/PostgreSQL
+### Estado actual por fase
+- [x] Fase 2: Base de datos (JPA + PostgreSQL)
+- [x] Fase 3: Servicios y validaciones base
+- [x] Fase 4: Integración de formularios/listados con BD (clientes, productos, ventas)
+- [x] Fase 5: Seguridad y permisos dinámicos
+- [ ] Fase 6: Funcionalidades avanzadas (reportes, exportaciones, dashboards)
 
-### Fase 3: Servicios
-- [ ] CRUD Services para cada entidad
-- [ ] Lógica de negocio
-- [ ] Validaciones
-
-### Fase 4: Integración
-- [ ] Reemplazar datos dummy con datos reales
-- [ ] REST APIs
-- [ ] Paginación real del backend
-
-### Fase 5: Seguridad
-- [ ] Spring Security
-- [ ] Autenticación
-- [ ] Control de permisos
-
-### Fase 6: Funcionalidades Avanzadas
+### Siguiente iteración sugerida
+- [ ] CRUD completo (editar/eliminar) para clientes, productos y ventas
+- [ ] Paginación y filtros reales de backend
+- [ ] API REST para módulos comerciales
 - [ ] Exportación a Excel/PDF
-- [ ] Gráficos (ChartJS)
-- [ ] Reportes dinámicos
+- [ ] Métricas y gráficos (ChartJS)
 
 ---
 
@@ -257,31 +255,39 @@ GET /config/permisos     Permisos
 ```xml
 spring-boot-starter-web
 spring-boot-starter-thymeleaf
+spring-boot-starter-security
+spring-boot-starter-data-jpa
+spring-boot-starter-validation
+thymeleaf-extras-springsecurity6
+postgresql
 spring-boot-devtools
-lombok
 spring-boot-starter-test
+h2 (test)
 ```
-
-**Incluye automáticamente:**
-- Bootstrap 5
-- Simple DataTables
-- Perfect Scrollbar
-- Mazer Admin Template
 
 ---
 
-## ✨ Ejecutar el Proyecto
+## ✨ Ejecutar el Proyecto (PostgreSQL local)
 
-```bash
-# Compilar
-./mvnw.cmd clean package -DskipTests
+```powershell
+# 1) Ir al proyecto
+cd C:\Users\User\Documents\IntelijIdea\Mazer_Ventas
 
-# Ejecutar
-./mvnw.cmd spring-boot:run
+# 2) Compilar
+.\mvnw.cmd clean package -DskipTests
 
-# Acceder
-http://localhost:8080
+# 3) Ejecutar
+.\mvnw.cmd spring-boot:run
+
+# 4) Acceder
+# http://localhost:8080
 ```
+
+> Configuración local usada en `src/main/resources/application.properties`:
+>
+> - `spring.datasource.url=jdbc:postgresql://localhost:5432/mazer_security`
+> - `spring.datasource.username=postgres`
+> - `spring.datasource.password=root`
 
 ---
 
@@ -324,18 +330,18 @@ Todas las vistas siguen este patrón reutilizable:
 
 ## 🎉 Conclusión
 
-**Sistema de Ventas profesional y modular listo para:**
-- ✅ Desarrollo backend
-- ✅ Integración con BD
-- ✅ Escalabilidad
-- ✅ Mantenibilidad
+**Sistema de Ventas modular actualmente operativo con PostgreSQL para el flujo base comercial:**
+- ✅ Seguridad, autenticación y permisos dinámicos por rol
+- ✅ Alta y listado de clientes
+- ✅ Alta y listado de productos
+- ✅ Registro y listado de ventas con validación de stock
 
-**Toda la estructura está en su lugar. Solo necesitas:**
-1. Conectar BD
-2. Implementar servicios
-3. Rellenar datos reales
+**Pendiente para completar suite funcional avanzada:**
+1. CRUD completo (editar/eliminar)
+2. Reportería avanzada y exportaciones
+3. Endpoints REST + paginación/filtros
 
-¡**Proyecto base listo para producción!** 🚀
+¡**Base productiva y escalable lista para la siguiente iteración!** 🚀
 
 ---
 
@@ -344,4 +350,3 @@ Todas las vistas siguen este patrón reutilizable:
 **Framework**: Spring Boot 3.1.4  
 **Template Engine**: Thymeleaf  
 **UI Framework**: Bootstrap 5
-

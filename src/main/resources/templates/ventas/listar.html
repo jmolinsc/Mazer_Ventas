@@ -13,83 +13,28 @@
             <a th:href="@{/ventas/nueva}" class="btn btn-primary btn-sm">Nueva Venta</a>
         </div>
         <div class="card-body">
+            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
             <table class="table table-striped" id="table1">
                 <thead>
                     <tr>
                         <th>ID Venta</th>
                         <th>Cliente</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
                         <th>Fecha</th>
                         <th>Total</th>
                         <th>Estado</th>
-                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>#001</td>
-                        <td>Cliente A</td>
-                        <td>2025-03-01</td>
-                        <td>$1,500.00</td>
-                        <td><span class="badge bg-success">Completada</span></td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Ver</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>#002</td>
-                        <td>Cliente B</td>
-                        <td>2025-03-02</td>
-                        <td>$2,300.00</td>
-                        <td><span class="badge bg-success">Completada</span></td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Ver</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>#003</td>
-                        <td>Cliente C</td>
-                        <td>2025-03-03</td>
-                        <td>$890.50</td>
-                        <td><span class="badge bg-warning">Pendiente</span></td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Ver</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>#004</td>
-                        <td>Cliente A</td>
-                        <td>2025-03-04</td>
-                        <td>$1,250.00</td>
-                        <td><span class="badge bg-success">Completada</span></td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Ver</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>#005</td>
-                        <td>Cliente D</td>
-                        <td>2025-03-05</td>
-                        <td>$3,100.00</td>
-                        <td><span class="badge bg-success">Completada</span></td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Ver</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>#006</td>
-                        <td>Cliente E</td>
-                        <td>2025-03-06</td>
-                        <td>$1,675.25</td>
-                        <td><span class="badge bg-danger">Cancelada</span></td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Ver</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
+                    <tr th:each="venta : ${ventas}">
+                        <td th:text="${venta.id}">1</td>
+                        <td th:text="${venta.cliente.nombre}">Cliente</td>
+                        <td th:text="${venta.producto.nombre}">Producto</td>
+                        <td th:text="${venta.cantidad}">1</td>
+                        <td th:text="${venta.fecha}">2026-03-10</td>
+                        <td th:text="${#numbers.formatDecimal(venta.total, 1, 'POINT', 2, 'COMMA')}">0.00</td>
+                        <td><span class="badge bg-success" th:text="${venta.estado}">COMPLETADA</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -98,4 +43,3 @@
 </section>
 </body>
 </html>
-

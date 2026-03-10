@@ -12,48 +12,43 @@
             <h4 class="card-title">Nueva Venta</h4>
         </div>
         <div class="card-body">
-            <form>
+            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+            <form method="post" th:action="@{/ventas/nueva}" th:object="${ventaForm}">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-3">
-                            <label for="cliente" class="form-label">Cliente</label>
-                            <select class="form-select" id="cliente">
-                                <option selected>Seleccionar cliente</option>
+                            <label for="clienteId" class="form-label">Cliente</label>
+                            <select class="form-select" id="clienteId" th:field="*{clienteId}">
+                                <option value="">Seleccionar cliente</option>
+                                <option th:each="cliente : ${clientes}" th:value="${cliente.id}" th:text="${cliente.nombre}"></option>
                             </select>
+                            <small class="text-danger" th:if="${#fields.hasErrors('clienteId')}" th:errors="*{clienteId}"></small>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label for="fecha" class="form-label">Fecha</label>
-                            <input type="date" class="form-control" id="fecha">
+                            <input type="date" class="form-control" id="fecha" th:field="*{fecha}">
+                            <small class="text-danger" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}"></small>
                         </div>
                     </div>
                 </div>
-                <div class="form-group mb-3">
-                    <label class="form-label">Detalles de Venta</label>
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Cantidad</th>
-                                <th>Precio</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><input type="text" class="form-control form-control-sm"></td>
-                                <td><input type="number" class="form-control form-control-sm"></td>
-                                <td><input type="number" class="form-control form-control-sm"></td>
-                                <td><input type="number" class="form-control form-control-sm" readonly></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
                 <div class="row">
-                    <div class="col-md-6 ms-auto">
+                    <div class="col-md-8">
                         <div class="form-group mb-3">
-                            <label class="form-label">Total: <strong>$0.00</strong></label>
+                            <label for="productoId" class="form-label">Producto</label>
+                            <select class="form-select" id="productoId" th:field="*{productoId}">
+                                <option value="">Seleccionar producto</option>
+                                <option th:each="producto : ${productos}" th:value="${producto.id}" th:text="${producto.nombre + ' - Stock: ' + producto.stock + ' - $' + producto.precio}"></option>
+                            </select>
+                            <small class="text-danger" th:if="${#fields.hasErrors('productoId')}" th:errors="*{productoId}"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label for="cantidad" class="form-label">Cantidad</label>
+                            <input type="number" class="form-control" id="cantidad" th:field="*{cantidad}" min="1">
+                            <small class="text-danger" th:if="${#fields.hasErrors('cantidad')}" th:errors="*{cantidad}"></small>
                         </div>
                     </div>
                 </div>
@@ -65,4 +60,3 @@
 </section>
 </body>
 </html>
-

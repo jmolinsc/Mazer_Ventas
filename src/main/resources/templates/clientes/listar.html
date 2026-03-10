@@ -13,6 +13,7 @@
             <a th:href="@{/clientes/nuevo}" class="btn btn-primary btn-sm">Nuevo Cliente</a>
         </div>
         <div class="card-body">
+            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
             <table class="table table-striped" id="table1">
                 <thead>
                     <tr>
@@ -21,75 +22,15 @@
                         <th>Email</th>
                         <th>Teléfono</th>
                         <th>Categoría</th>
-                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>001</td>
-                        <td>Cliente A</td>
-                        <td>cliente@email.com</td>
-                        <td>555-1234</td>
-                        <td>VIP</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>002</td>
-                        <td>Cliente B</td>
-                        <td>clienteb@email.com</td>
-                        <td>555-5678</td>
-                        <td>Regular</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>003</td>
-                        <td>Cliente C</td>
-                        <td>clientec@email.com</td>
-                        <td>555-9012</td>
-                        <td>Premium</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>004</td>
-                        <td>Cliente D</td>
-                        <td>cliented@email.com</td>
-                        <td>555-3456</td>
-                        <td>VIP</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>005</td>
-                        <td>Cliente E</td>
-                        <td>cliente@email.com</td>
-                        <td>555-7890</td>
-                        <td>Regular</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>006</td>
-                        <td>Cliente F</td>
-                        <td>clientef@email.com</td>
-                        <td>555-2468</td>
-                        <td>Premium</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
+                    <tr th:each="cliente : ${clientes}">
+                        <td th:text="${cliente.id}">1</td>
+                        <td th:text="${cliente.nombre}">Cliente</td>
+                        <td th:text="${cliente.email}">cliente@email.com</td>
+                        <td th:text="${cliente.telefono}">555-1234</td>
+                        <td th:text="${cliente.categoria}">VIP</td>
                     </tr>
                 </tbody>
             </table>
@@ -98,4 +39,3 @@
 </section>
 </body>
 </html>
-
