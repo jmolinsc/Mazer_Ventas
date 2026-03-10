@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body th:replace="~{fragments/layout :: layout(
+    'Listar Productos - Sistema de Ventas',
+    ${pageHeading},
+    ${pageSubtitle},
+    ~{::section}
+)}">
+<section class="section">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="card-title">Catálogo de Productos</h4>
+            <a th:href="@{/productos/nuevo}" class="btn btn-primary btn-sm">Nuevo Producto</a>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped" id="table1">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>001</td>
+                        <td>Producto A</td>
+                        <td>Categoría 1</td>
+                        <td>$100.00</td>
+                        <td>50</td>
+                        <td>
+                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>002</td>
+                        <td>Producto B</td>
+                        <td>Categoría 2</td>
+                        <td>$150.00</td>
+                        <td>35</td>
+                        <td>
+                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>003</td>
+                        <td>Producto C</td>
+                        <td>Categoría 1</td>
+                        <td>$75.50</td>
+                        <td>120</td>
+                        <td>
+                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>004</td>
+                        <td>Producto D</td>
+                        <td>Categoría 3</td>
+                        <td>$200.00</td>
+                        <td>20</td>
+                        <td>
+                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>005</td>
+                        <td>Producto E</td>
+                        <td>Categoría 2</td>
+                        <td>$125.00</td>
+                        <td>80</td>
+                        <td>
+                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>006</td>
+                        <td>Producto F</td>
+                        <td>Categoría 1</td>
+                        <td>$90.00</td>
+                        <td>45</td>
+                        <td>
+                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>
+

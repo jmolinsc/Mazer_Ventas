@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body th:replace="~{fragments/layout :: layout(
+    'Cuentas Pendientes - Cuentas por Cobrar',
+    ${pageHeading},
+    ${pageSubtitle},
+    ~{::section}
+)}">
+<section class="section">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total por Cobrar</h5>
+                    <p class="card-text display-6">$25,500.00</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Facturas Vencidas</h5>
+                    <p class="card-text display-6">8</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Próximas a Vencer</h5>
+                    <p class="card-text display-6">5</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">En Plazo</h5>
+                    <p class="card-text display-6">12</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4 class="card-title">Cuentas Pendientes</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped" id="table1">
+                <thead>
+                    <tr>
+                        <th>Factura</th>
+                        <th>Cliente</th>
+                        <th>Monto</th>
+                        <th>Fecha Vencimiento</th>
+                        <th>Días Vencido</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#F-001</td>
+                        <td>Cliente A</td>
+                        <td>$2,500.00</td>
+                        <td>2025-02-15</td>
+                        <td>22</td>
+                        <td><span class="badge bg-danger">Vencida</span></td>
+                    </tr>
+                    <tr>
+                        <td>#F-002</td>
+                        <td>Cliente B</td>
+                        <td>$3,200.00</td>
+                        <td>2025-02-20</td>
+                        <td>17</td>
+                        <td><span class="badge bg-danger">Vencida</span></td>
+                    </tr>
+                    <tr>
+                        <td>#F-003</td>
+                        <td>Cliente C</td>
+                        <td>$1,800.00</td>
+                        <td>2025-03-05</td>
+                        <td>3</td>
+                        <td><span class="badge bg-warning">Por Vencer</span></td>
+                    </tr>
+                    <tr>
+                        <td>#F-004</td>
+                        <td>Cliente D</td>
+                        <td>$2,150.00</td>
+                        <td>2025-03-10</td>
+                        <td>-2</td>
+                        <td><span class="badge bg-info">En Plazo</span></td>
+                    </tr>
+                    <tr>
+                        <td>#F-005</td>
+                        <td>Cliente E</td>
+                        <td>$4,500.00</td>
+                        <td>2025-02-10</td>
+                        <td>27</td>
+                        <td><span class="badge bg-danger">Vencida</span></td>
+                    </tr>
+                    <tr>
+                        <td>#F-006</td>
+                        <td>Cliente F</td>
+                        <td>$1,350.00</td>
+                        <td>2025-03-15</td>
+                        <td>-8</td>
+                        <td><span class="badge bg-info">En Plazo</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>
+

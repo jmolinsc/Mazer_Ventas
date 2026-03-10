@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body th:replace="~{fragments/layout :: layout(
+    'Gestión de Permisos - Configuración',
+    ${pageHeading},
+    ${pageSubtitle},
+    ~{::section}
+)}">
+<section class="section">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Administrar Permisos por Rol</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="rol" class="form-label">Seleccionar Rol</label>
+                    <select class="form-select" id="rol">
+                        <option selected>Seleccionar rol</option>
+                        <option>Administrador</option>
+                        <option>Vendedor</option>
+                        <option>Bodeguero</option>
+                        <option>Contador</option>
+                    </select>
+                </div>
+            </div>
+            <h5>Permisos</h5>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Módulo</th>
+                        <th>Ver</th>
+                        <th>Crear</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ventas</td>
+                        <td><input type="checkbox" checked></td>
+                        <td><input type="checkbox" checked></td>
+                        <td><input type="checkbox" checked></td>
+                        <td><input type="checkbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Inventario</td>
+                        <td><input type="checkbox" checked></td>
+                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="btn btn-primary mt-3">Guardar Permisos</button>
+        </div>
+    </div>
+</section>
+</body>
+</html>
+

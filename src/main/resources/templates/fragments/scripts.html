@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!-- CSS DataTables -->
+<link th:fragment="datatableCSS" rel="stylesheet" th:href="@{/assets/extensions/simple-datatables/style.css}">
+
+<!-- Scripts -->
+<script th:fragment="themeInitScript" th:src="@{/assets/static/js/initTheme.js}"></script>
+<script th:fragment="darkScript" th:src="@{/assets/static/js/components/dark.js}"></script>
+<script th:fragment="scrollbarScript" th:src="@{/assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js}"></script>
+<script th:fragment="appScript" th:src="@{/assets/compiled/js/app.js}"></script>
+<script th:fragment="datatableScript" th:src="@{/assets/extensions/simple-datatables/umd/simple-datatables.js}"></script>
+<script th:fragment="datatableInitScript" th:src="@{/js/datatable-init.js}"></script>
+</html>

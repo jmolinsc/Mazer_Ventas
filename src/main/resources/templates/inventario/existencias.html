@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body th:replace="~{fragments/layout :: layout(
+    'Existencias en Inventario',
+    ${pageHeading},
+    ${pageSubtitle},
+    ~{::section}
+)}">
+<section class="section">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Stock Disponible</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped" id="table1">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Stock</th>
+                        <th>Unidad</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>001</td>
+                        <td>Producto A</td>
+                        <td>150</td>
+                        <td>Unidad</td>
+                        <td><span class="badge bg-info">Disponible</span></td>
+                    </tr>
+                    <tr>
+                        <td>002</td>
+                        <td>Producto B</td>
+                        <td>75</td>
+                        <td>Kg</td>
+                        <td><span class="badge bg-info">Disponible</span></td>
+                    </tr>
+                    <tr>
+                        <td>003</td>
+                        <td>Producto C</td>
+                        <td>8</td>
+                        <td>Caja</td>
+                        <td><span class="badge bg-warning">Bajo Stock</span></td>
+                    </tr>
+                    <tr>
+                        <td>004</td>
+                        <td>Producto D</td>
+                        <td>220</td>
+                        <td>Unidad</td>
+                        <td><span class="badge bg-info">Disponible</span></td>
+                    </tr>
+                    <tr>
+                        <td>005</td>
+                        <td>Producto E</td>
+                        <td>0</td>
+                        <td>Litro</td>
+                        <td><span class="badge bg-danger">Agotado</span></td>
+                    </tr>
+                    <tr>
+                        <td>006</td>
+                        <td>Producto F</td>
+                        <td>95</td>
+                        <td>Unidad</td>
+                        <td><span class="badge bg-info">Disponible</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>
+
