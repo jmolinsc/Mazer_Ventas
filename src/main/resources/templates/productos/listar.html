@@ -21,6 +21,7 @@
                         <th>Código</th>
                         <th>Producto</th>
                         <th>Categoría</th>
+                        <th>Fabricante</th>
                         <th>Precio</th>
                         <th>Stock</th>
                         <th>Unidad</th>
@@ -32,6 +33,7 @@
                         <td th:text="${producto.codigo}">P001</td>
                         <td th:text="${producto.nombre}">Producto</td>
                         <td th:text="${producto.categoria}">Categoría</td>
+                        <td th:text="${producto.fabricante != null ? producto.fabricante.nombre : 'Sin fabricante'}">Fabricante</td>
                         <td th:text="${#numbers.formatDecimal(producto.precio, 1, 'POINT', 2, 'COMMA')}">0.00</td>
                         <td th:text="${producto.stock}">0</td>
                         <td th:text="${producto.unidad}">Unidad</td>

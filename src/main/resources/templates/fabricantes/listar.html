@@ -13,82 +13,34 @@
             <a th:href="@{/fabricantes/nuevo}" class="btn btn-primary btn-sm">Nuevo Fabricante</a>
         </div>
         <div class="card-body">
+            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+            <div class="alert alert-danger"  th:if="${errorMessage}"   th:text="${errorMessage}"></div>
             <table class="table table-striped" id="table1">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
                         <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>País</th>
+                        <th>Telefono</th>
+                        <th>Pais</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>001</td>
-                        <td>Fabricante A</td>
-                        <td>fabricante@email.com</td>
-                        <td>555-5678</td>
-                        <td>Colombia</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>002</td>
-                        <td>Fabricante B</td>
-                        <td>fabricanteb@email.com</td>
-                        <td>555-8901</td>
-                        <td>México</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>003</td>
-                        <td>Fabricante C</td>
-                        <td>fabricantec@email.com</td>
-                        <td>555-2345</td>
-                        <td>Brasil</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>004</td>
-                        <td>Fabricante D</td>
-                        <td>fabricanted@email.com</td>
-                        <td>555-6789</td>
-                        <td>España</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>005</td>
-                        <td>Fabricante E</td>
-                        <td>fabricantee@email.com</td>
-                        <td>555-0123</td>
-                        <td>China</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>006</td>
-                        <td>Fabricante F</td>
-                        <td>fabricantef@email.com</td>
-                        <td>555-4567</td>
-                        <td>Japón</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
+                    <tr th:each="fab : ${fabricantes}">
+                        <td th:text="${fab.id}">1</td>
+                        <td th:text="${fab.nombre}">Fabricante</td>
+                        <td th:text="${fab.email}">fab@email.com</td>
+                        <td th:text="${fab.telefono}">555-0000</td>
+                        <td th:text="${fab.pais}">Colombia</td>
+                        <td class="d-flex gap-2">
+                            <a class="btn btn-warning btn-sm"
+                               th:href="@{'/fabricantes/editar/' + ${fab.id}}">Editar</a>
+                            <form method="post"
+                                  th:action="@{'/fabricantes/eliminar/' + ${fab.id}}"
+                                  onsubmit="return confirm('Eliminar fabricante?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
                         </td>
                     </tr>
                 </tbody>
@@ -98,4 +50,3 @@
 </section>
 </body>
 </html>
-

@@ -52,10 +52,15 @@ public class SecurityMigrationConfig {
         record OptionDef(String codigo, String nombre, String url, String descripcion, int orden, String menuCodigo) {}
 
         List<OptionDef> toAdd = List.of(
-                new OptionDef("CLIENTES_EDITAR",   "Editar Cliente",   "/clientes/editar",   "Editar datos del cliente",   4, "CLIENTES"),
-                new OptionDef("CLIENTES_ELIMINAR",  "Eliminar Cliente",  "/clientes/eliminar",  "Eliminar cliente",           5, "CLIENTES"),
-                new OptionDef("PRODUCTOS_EDITAR",   "Editar Producto",   "/productos/editar",   "Editar datos del producto",  4, "PRODUCTOS"),
-                new OptionDef("PRODUCTOS_ELIMINAR", "Eliminar Producto", "/productos/eliminar", "Eliminar producto",          5, "PRODUCTOS")
+                new OptionDef("CLIENTES_EDITAR",     "Editar Cliente",     "/clientes/editar",     "Editar datos del cliente",    4, "CLIENTES"),
+                new OptionDef("CLIENTES_ELIMINAR",   "Eliminar Cliente",   "/clientes/eliminar",   "Eliminar cliente",            5, "CLIENTES"),
+                new OptionDef("PRODUCTOS_NUEVO",      "Nuevo Producto",      "/productos/nuevo",      "Alta de producto",             1, "PRODUCTOS"),
+                new OptionDef("PRODUCTOS_LISTAR",     "Listar Productos",    "/productos/listar",     "Listado de productos",        2, "PRODUCTOS"),
+                new OptionDef("PRODUCTOS_CATEGORIAS", "Categorias",          "/productos/categorias", "Clasificacion de productos",  3, "PRODUCTOS"),
+                new OptionDef("PRODUCTOS_EDITAR",     "Editar Producto",     "/productos/editar",     "Editar datos del producto",  4, "PRODUCTOS"),
+                new OptionDef("PRODUCTOS_ELIMINAR",   "Eliminar Producto",   "/productos/eliminar",   "Eliminar producto",          5, "PRODUCTOS"),
+                new OptionDef("FABRICANTES_EDITAR",  "Editar Fabricante",  "/fabricantes/editar",  "Editar datos del fabricante", 3, "FABRICANTES"),
+                new OptionDef("FABRICANTES_ELIMINAR", "Eliminar Fabricante", "/fabricantes/eliminar", "Eliminar fabricante",        4, "FABRICANTES")
         );
 
         for (OptionDef def : toAdd) {
@@ -79,11 +84,17 @@ public class SecurityMigrationConfig {
                 .collect(LinkedHashMap::new, (m, r) -> m.put(r.getCodigo().toUpperCase(), r), Map::putAll);
 
         assignOptions(roles.get("ADMIN"),
-                List.of("CLIENTES_EDITAR", "CLIENTES_ELIMINAR", "PRODUCTOS_EDITAR", "PRODUCTOS_ELIMINAR"),
+                List.of(
+                        "CLIENTES_EDITAR", "CLIENTES_ELIMINAR", "PRODUCTOS_NUEVO", "PRODUCTOS_LISTAR", "PRODUCTOS_CATEGORIAS", "PRODUCTOS_EDITAR", "PRODUCTOS_ELIMINAR",
+                        "FABRICANTES_EDITAR", "FABRICANTES_ELIMINAR"),
                 existing);
 
         assignOptions(roles.get("VENDEDOR"),
-                List.of("CLIENTES_EDITAR", "CLIENTES_ELIMINAR", "PRODUCTOS_EDITAR"),
+                List.of("PRODUCTOS_LISTAR"),
+                existing);
+
+        assignOptions(roles.get("BODEGA"),
+                List.of("PRODUCTOS_NUEVO", "PRODUCTOS_LISTAR", "PRODUCTOS_CATEGORIAS", "PRODUCTOS_EDITAR", "PRODUCTOS_ELIMINAR"),
                 existing);
     }
 

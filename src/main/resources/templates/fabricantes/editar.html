@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body th:replace="~{fragments/layout :: layout(
-    'Nuevo Fabricante - Sistema de Ventas',
+    'Editar Fabricante - Sistema de Ventas',
     ${pageHeading},
     ${pageSubtitle},
     ~{::section}
@@ -9,11 +9,11 @@
 <section class="section">
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Registrar Nuevo Fabricante</h4>
+            <h4 class="card-title">Editar Fabricante</h4>
         </div>
         <div class="card-body">
             <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
-            <form method="post" th:action="@{/fabricantes/nuevo}" th:object="${fabricanteForm}">
+            <form method="post" th:action="@{'/fabricantes/editar/' + ${fabricanteId}}" th:object="${fabricanteForm}">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-3">
@@ -52,7 +52,7 @@
                     <label for="direccion" class="form-label">Direccion</label>
                     <textarea class="form-control" id="direccion" rows="2" th:field="*{direccion}"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Guardar Fabricante</button>
+                <button type="submit" class="btn btn-primary">Actualizar Fabricante</button>
                 <a th:href="@{/fabricantes/listar}" class="btn btn-secondary">Cancelar</a>
             </form>
         </div>
@@ -60,3 +60,4 @@
 </section>
 </body>
 </html>
+

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body th:replace="~{fragments/layout :: layout(
-    'Categorías de Clientes',
+    'Categorias de Clientes',
     ${pageHeading},
     ${pageSubtitle},
     ~{::section}
@@ -9,53 +9,50 @@
 <section class="section">
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Administrar Categorías</h4>
+            <h4 class="card-title">Administrar Categorias</h4>
         </div>
         <div class="card-body">
+            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+            <form class="row g-3 mb-4"
+                  method="post"
+                  th:action="${editMode} ? @{'/clientes/categorias/editar/' + ${categoriaId}} : @{/clientes/categorias}"
+                  th:object="${categoriaForm}">
+                <div class="col-md-4">
+                    <label class="form-label" for="nombre">Categoria</label>
+                    <input id="nombre" class="form-control" th:field="*{nombre}" type="text">
+                    <small class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></small>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="descripcion">Descripcion</label>
+                    <input id="descripcion" class="form-control" th:field="*{descripcion}" type="text">
+                    <small class="text-danger" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></small>
+                </div>
+                <div class="col-md-2 d-grid align-items-end">
+                    <button class="btn btn-primary" type="submit" th:text="${editMode} ? 'Actualizar' : 'Crear'">Crear</button>
+                </div>
+            </form>
+
             <table class="table table-striped" id="table1">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Categoría</th>
-                        <th>Descripción</th>
+                        <th>Categoria</th>
+                        <th>Descripcion</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>VIP</td>
-                        <td>Clientes premium</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Regular</td>
-                        <td>Clientes normales</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Premium</td>
-                        <td>Clientes preferenciales</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Mayorista</td>
-                        <td>Clientes al por mayor</td>
-                        <td>
-                            <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
+                    <tr th:each="cat : ${categorias}">
+                        <td th:text="${cat.id}">1</td>
+                        <td th:text="${cat.nombre}">VIP</td>
+                        <td th:text="${cat.descripcion}">Clientes premium</td>
+                        <td class="d-flex gap-2">
+                            <a class="btn btn-warning btn-sm" th:href="@{'/clientes/categorias/editar/' + ${cat.id}}">Editar</a>
+                            <form method="post" th:action="@{'/clientes/categorias/eliminar/' + ${cat.id}}" onsubmit="return confirm('Eliminar categoria?');">
+                                <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
+                            </form>
                         </td>
                     </tr>
                 </tbody>
@@ -65,4 +62,3 @@
 </section>
 </body>
 </html>
-

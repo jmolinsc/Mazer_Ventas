@@ -43,6 +43,18 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group mb-3">
+                            <label for="fabricanteId" class="form-label">Fabricante</label>
+                            <select class="form-select" id="fabricanteId" th:field="*{fabricanteId}">
+                                <option value="">Seleccionar fabricante</option>
+                                <option th:each="fabricante : ${fabricantes}" th:value="${fabricante.id}" th:text="${fabricante.nombre}"></option>
+                            </select>
+                            <small class="text-danger" th:if="${#fields.hasErrors('fabricanteId')}" th:errors="*{fabricanteId}"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
                             <label for="unidad" class="form-label">Unidad</label>
                             <input type="text" class="form-control" id="unidad" th:field="*{unidad}">
                             <small class="text-danger" th:if="${#fields.hasErrors('unidad')}" th:errors="*{unidad}"></small>

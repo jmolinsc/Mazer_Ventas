@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.deyhayenterprise.mazeradmintemplate.service.ClienteCategoriaService;
 import com.deyhayenterprise.mazeradmintemplate.service.ClienteService;
+import com.deyhayenterprise.mazeradmintemplate.web.form.ClienteCategoriaForm;
 import com.deyhayenterprise.mazeradmintemplate.web.form.ClienteCreateForm;
 
 import jakarta.validation.Valid;
@@ -25,16 +27,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ClientesController {
 
-    private static final List<String> CATEGORIAS = List.of("VIP", "Regular", "Premium", "Mayorista");
-
     private final ClienteService clienteService;
+    private final ClienteCategoriaService clienteCategoriaService;
 
     @GetMapping("/nuevo")
     public String nuevoCliente(Model model) {
         log.info("Nuevo cliente");
         model.addAttribute("pageHeading", "Nuevo Cliente");
         model.addAttribute("pageSubtitle", "Registrar un nuevo cliente");
-        model.addAttribute("categorias", CATEGORIAS);
+        model.addAttribute("categorias", clienteCategoriaService.findAllCategoryNames());
         if (!model.containsAttribute("clienteForm")) {
             model.addAttribute("clienteForm", new ClienteCreateForm());
         }
@@ -49,7 +50,7 @@ public class ClientesController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("pageHeading", "Nuevo Cliente");
             model.addAttribute("pageSubtitle", "Registrar un nuevo cliente");
-            model.addAttribute("categorias", CATEGORIAS);
+            model.addAttribute("categorias", clienteCategoriaService.findAllCategoryNames());
             return "clientes/nuevo";
         }
 
@@ -60,7 +61,7 @@ public class ClientesController {
         } catch (IllegalArgumentException ex) {
             model.addAttribute("pageHeading", "Nuevo Cliente");
             model.addAttribute("pageSubtitle", "Registrar un nuevo cliente");
-            model.addAttribute("categorias", CATEGORIAS);
+            model.addAttribute("categorias", clienteCategoriaService.findAllCategoryNames());
             model.addAttribute("errorMessage", ex.getMessage());
             return "clientes/nuevo";
         }
@@ -80,7 +81,99 @@ public class ClientesController {
         log.info("Categorías de clientes");
         model.addAttribute("pageHeading", "Categorías de Clientes");
         model.addAttribute("pageSubtitle", "Administrar categorías de clientes");
+        model.addAttribute("categorias", clienteCategoriaService.findAllActive());
+        if (!model.containsAttribute("categoriaForm")) {
+            model.addAttribute("categoriaForm", new ClienteCategoriaForm());
+        }
+        model.addAttribute("editMode", false);
         return "clientes/categorias";
+    }
+
+    @PostMapping("/categorias")
+    public String crearCategoria(@Valid @ModelAttribute("categoriaForm") ClienteCategoriaForm categoriaForm,
+                                 BindingResult bindingResult,
+                                 RedirectAttributes redirectAttributes,
+                                 Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageHeading", "Categorías de Clientes");
+            model.addAttribute("pageSubtitle", "Administrar categorías de clientes");
+            model.addAttribute("categorias", clienteCategoriaService.findAllActive());
+            model.addAttribute("editMode", false);
+            return "clientes/categorias";
+        }
+        try {
+            clienteCategoriaService.create(categoriaForm);
+            redirectAttributes.addFlashAttribute("successMessage", "Categoría creada correctamente.");
+            return "redirect:/clientes/categorias";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("pageHeading", "Categorías de Clientes");
+            model.addAttribute("pageSubtitle", "Administrar categorías de clientes");
+            model.addAttribute("categorias", clienteCategoriaService.findAllActive());
+            model.addAttribute("editMode", false);
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "clientes/categorias";
+        }
+    }
+
+    @GetMapping("/categorias/editar/{id}")
+    public String editarCategoria(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            var categoria = clienteCategoriaService.findActiveById(id);
+            ClienteCategoriaForm form = new ClienteCategoriaForm();
+            form.setNombre(categoria.getNombre());
+            form.setDescripcion(categoria.getDescripcion());
+
+            model.addAttribute("pageHeading", "Categorías de Clientes");
+            model.addAttribute("pageSubtitle", "Administrar categorías de clientes");
+            model.addAttribute("categorias", clienteCategoriaService.findAllActive());
+            model.addAttribute("categoriaForm", form);
+            model.addAttribute("editMode", true);
+            model.addAttribute("categoriaId", id);
+            return "clientes/categorias";
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/clientes/categorias";
+        }
+    }
+
+    @PostMapping("/categorias/editar/{id}")
+    public String actualizarCategoria(@PathVariable Long id,
+                                      @Valid @ModelAttribute("categoriaForm") ClienteCategoriaForm categoriaForm,
+                                      BindingResult bindingResult,
+                                      RedirectAttributes redirectAttributes,
+                                      Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageHeading", "Categorías de Clientes");
+            model.addAttribute("pageSubtitle", "Administrar categorías de clientes");
+            model.addAttribute("categorias", clienteCategoriaService.findAllActive());
+            model.addAttribute("editMode", true);
+            model.addAttribute("categoriaId", id);
+            return "clientes/categorias";
+        }
+        try {
+            clienteCategoriaService.update(id, categoriaForm);
+            redirectAttributes.addFlashAttribute("successMessage", "Categoría actualizada correctamente.");
+            return "redirect:/clientes/categorias";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("pageHeading", "Categorías de Clientes");
+            model.addAttribute("pageSubtitle", "Administrar categorías de clientes");
+            model.addAttribute("categorias", clienteCategoriaService.findAllActive());
+            model.addAttribute("editMode", true);
+            model.addAttribute("categoriaId", id);
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "clientes/categorias";
+        }
+    }
+
+    @PostMapping("/categorias/eliminar/{id}")
+    public String eliminarCategoria(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            clienteCategoriaService.delete(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Categoría eliminada correctamente.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/clientes/categorias";
     }
 
     @GetMapping("/editar/{id}")
@@ -88,7 +181,7 @@ public class ClientesController {
         try {
             model.addAttribute("pageHeading", "Editar Cliente");
             model.addAttribute("pageSubtitle", "Actualizar datos del cliente");
-            model.addAttribute("categorias", CATEGORIAS);
+            model.addAttribute("categorias", clienteCategoriaService.findAllCategoryNames());
             model.addAttribute("clienteId", id);
             if (!model.containsAttribute("clienteForm")) {
                 ClienteCreateForm form = new ClienteCreateForm();
@@ -116,7 +209,7 @@ public class ClientesController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("pageHeading", "Editar Cliente");
             model.addAttribute("pageSubtitle", "Actualizar datos del cliente");
-            model.addAttribute("categorias", CATEGORIAS);
+            model.addAttribute("categorias", clienteCategoriaService.findAllCategoryNames());
             model.addAttribute("clienteId", id);
             return "clientes/editar";
         }
@@ -128,7 +221,7 @@ public class ClientesController {
         } catch (IllegalArgumentException ex) {
             model.addAttribute("pageHeading", "Editar Cliente");
             model.addAttribute("pageSubtitle", "Actualizar datos del cliente");
-            model.addAttribute("categorias", CATEGORIAS);
+            model.addAttribute("categorias", clienteCategoriaService.findAllCategoryNames());
             model.addAttribute("clienteId", id);
             model.addAttribute("errorMessage", ex.getMessage());
             return "clientes/editar";

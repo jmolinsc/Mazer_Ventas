@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.deyhayenterprise.mazeradmintemplate.entity.Cliente;
 import com.deyhayenterprise.mazeradmintemplate.entity.Producto;
 import com.deyhayenterprise.mazeradmintemplate.repository.ClienteRepository;
+import com.deyhayenterprise.mazeradmintemplate.repository.FabricanteRepository;
 import com.deyhayenterprise.mazeradmintemplate.repository.ProductoRepository;
 
 @SpringBootTest
@@ -34,13 +35,16 @@ class BusinessFlowIntegrationTests {
     @Autowired
     private ProductoRepository productoRepository;
 
+    @Autowired
+    private FabricanteRepository fabricanteRepository;
+
     @Test
     void adminShouldCreateClienteProductoAndVenta() throws Exception {
         MockHttpSession session = login("admin", "Admin123*");
         String suffix = String.valueOf(System.currentTimeMillis());
-
         String email = "cliente." + suffix + "@mazer.local";
         String codigo = "PRD_" + suffix;
+        String fabricanteId = firstFabricanteId();
 
         mockMvc.perform(post("/clientes/nuevo").session(session)
                         .param("nombre", "Cliente " + suffix)
@@ -57,6 +61,7 @@ class BusinessFlowIntegrationTests {
                         .param("categoria", "Oficina")
                         .param("precio", "99.90")
                         .param("stock", "12")
+                        .param("fabricanteId", fabricanteId)
                         .param("unidad", "Unidad"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/productos/listar"));
@@ -96,6 +101,7 @@ class BusinessFlowIntegrationTests {
     void shouldRejectVentaWithInsufficientStock() throws Exception {
         MockHttpSession session = login("admin", "Admin123*");
         String suffix = "LOW_" + System.currentTimeMillis();
+        String fabricanteId = firstFabricanteId();
 
         mockMvc.perform(post("/productos/nuevo").session(session)
                         .param("nombre", "Stock corto")
@@ -103,6 +109,7 @@ class BusinessFlowIntegrationTests {
                         .param("categoria", "Hogar")
                         .param("precio", "10.00")
                         .param("stock", "1")
+                        .param("fabricanteId", fabricanteId)
                         .param("unidad", "Unidad"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/productos/listar"));
@@ -122,9 +129,9 @@ class BusinessFlowIntegrationTests {
     @Test
     void shouldUpdateClienteAndProducto() throws Exception {
         MockHttpSession session = login("admin", "Admin123*");
-
         Cliente cliente = clienteRepository.findByEmailIgnoreCase("clientea@mazer.local").orElseThrow();
         Producto producto = productoRepository.findByCodigoIgnoreCase("P-001").orElseThrow();
+        String fabricanteId = firstFabricanteId();
 
         mockMvc.perform(post("/clientes/editar/" + cliente.getId()).session(session)
                         .param("nombre", "Cliente A Editado")
@@ -141,6 +148,7 @@ class BusinessFlowIntegrationTests {
                         .param("categoria", "Electronica")
                         .param("precio", "1300.00")
                         .param("stock", "18")
+                        .param("fabricanteId", fabricanteId)
                         .param("unidad", "Unidad"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/productos/listar"));
@@ -158,9 +166,9 @@ class BusinessFlowIntegrationTests {
     void shouldSoftDeleteClienteAndProducto() throws Exception {
         MockHttpSession session = login("admin", "Admin123*");
         String suffix = String.valueOf(System.currentTimeMillis());
-
         String email = "delete." + suffix + "@mazer.local";
         String codigo = "DEL_" + suffix;
+        String fabricanteId = firstFabricanteId();
 
         mockMvc.perform(post("/clientes/nuevo").session(session)
                         .param("nombre", "Cliente Delete " + suffix)
@@ -177,6 +185,7 @@ class BusinessFlowIntegrationTests {
                         .param("categoria", "Oficina")
                         .param("precio", "50.00")
                         .param("stock", "5")
+                        .param("fabricanteId", fabricanteId)
                         .param("unidad", "Unidad"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/productos/listar"));
@@ -210,5 +219,12 @@ class BusinessFlowIntegrationTests {
                 .andReturn();
 
         return (MockHttpSession) result.getRequest().getSession(false);
+    }
+
+    private String firstFabricanteId() {
+        return fabricanteRepository.findAllByActivoTrueOrderByIdDesc().stream()
+                .findFirst()
+                .map(f -> f.getId().toString())
+                .orElseThrow(() -> new IllegalStateException("No hay fabricantes para pruebas."));
     }
 }

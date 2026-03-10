@@ -25,7 +25,7 @@ public class SecurityConfig {
         http.authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/assets/**", "/js/**", "/css/**", "/images/**", "/webjars/**").permitAll()
-                        .requestMatchers("/auth-login", "/error-403", "/error-404", "/error-500", "/greetingNoParamTest").permitAll()
+                        .requestMatchers("/auth-login", "/error", "/error-403", "/error-404", "/error-500", "/greetingNoParamTest").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
                         .anyRequest().access(databaseMenuAuthorizationManager))
                 .formLogin(form -> form
@@ -60,4 +60,3 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-

@@ -6,7 +6,9 @@ import java.util.Locale;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.deyhayenterprise.mazeradmintemplate.entity.Fabricante;
 import com.deyhayenterprise.mazeradmintemplate.entity.Producto;
+import com.deyhayenterprise.mazeradmintemplate.repository.FabricanteRepository;
 import com.deyhayenterprise.mazeradmintemplate.repository.ProductoRepository;
 import com.deyhayenterprise.mazeradmintemplate.web.form.ProductoCreateForm;
 
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final FabricanteRepository fabricanteRepository;
 
     @Transactional(readOnly = true)
     public List<Producto> findAll() {
@@ -64,11 +67,15 @@ public class ProductoService {
     }
 
     private void applyValues(Producto producto, ProductoCreateForm form, String normalizedCode) {
+        Fabricante fabricante = fabricanteRepository.findByIdAndActivoTrue(form.getFabricanteId())
+                .orElseThrow(() -> new IllegalArgumentException("Fabricante no encontrado."));
+
         producto.setCodigo(normalizedCode);
         producto.setNombre(form.getNombre().trim());
         producto.setCategoria(form.getCategoria().trim());
         producto.setPrecio(form.getPrecio());
         producto.setStock(form.getStock());
         producto.setUnidad(form.getUnidad().trim());
+        producto.setFabricante(fabricante);
     }
 }

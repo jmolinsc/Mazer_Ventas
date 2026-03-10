@@ -34,8 +34,10 @@ public class ProductoCreateForm {
     @Min(value = 0, message = "El stock no puede ser negativo")
     private Integer stock;
 
+    @NotNull(message = "Debe seleccionar un fabricante")
+    private Long fabricanteId;
+
     @NotBlank(message = "La unidad es obligatoria")
     @Size(max = 20, message = "La unidad no puede superar 20 caracteres")
     private String unidad;
 }
-
