@@ -66,7 +66,7 @@ public class VentasController {
 
         try {
             log.info("Accion recibida en nueva venta: {}", accion);
-            ventaService.create(ventaForm);
+            ventaService.create(ventaForm, accion);
             redirectAttributes.addFlashAttribute("successMessage", "Venta registrada correctamente. Acción: " + accion);
             return "redirect:/ventas/listar";
         } catch (IllegalArgumentException ex) {
