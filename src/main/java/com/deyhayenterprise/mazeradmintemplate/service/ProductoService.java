@@ -10,6 +10,7 @@ import com.deyhayenterprise.mazeradmintemplate.entity.Fabricante;
 import com.deyhayenterprise.mazeradmintemplate.entity.Producto;
 import com.deyhayenterprise.mazeradmintemplate.repository.FabricanteRepository;
 import com.deyhayenterprise.mazeradmintemplate.repository.ProductoRepository;
+import com.deyhayenterprise.mazeradmintemplate.repository.UnidadMedidaRepository;
 import com.deyhayenterprise.mazeradmintemplate.web.form.ProductoCreateForm;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
     private final FabricanteRepository fabricanteRepository;
+    private final UnidadMedidaRepository unidadMedidaRepository;
 
     @Transactional(readOnly = true)
     public List<Producto> findAll() {
@@ -70,12 +72,18 @@ public class ProductoService {
         Fabricante fabricante = fabricanteRepository.findByIdAndActivoTrue(form.getFabricanteId())
                 .orElseThrow(() -> new IllegalArgumentException("Fabricante no encontrado."));
 
+        String unidad = form.getUnidad() == null ? "" : form.getUnidad().trim();
+        boolean unidadValida = unidadMedidaRepository.existsByNombreIgnoreCaseAndActivoTrue(unidad);
+        if (!unidadValida) {
+            throw new IllegalArgumentException("La unidad seleccionada no es valida.");
+        }
+
         producto.setCodigo(normalizedCode);
         producto.setNombre(form.getNombre().trim());
         producto.setCategoria(form.getCategoria().trim());
         producto.setPrecio(form.getPrecio());
         producto.setStock(form.getStock());
-        producto.setUnidad(form.getUnidad().trim());
+        producto.setUnidad(unidad);
         producto.setFabricante(fabricante);
     }
 }

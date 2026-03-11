@@ -56,7 +56,10 @@
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label for="unidad" class="form-label">Unidad</label>
-                            <input type="text" class="form-control" id="unidad" th:field="*{unidad}">
+                            <select class="form-select" id="unidad" th:field="*{unidad}">
+                                <option value="">Seleccionar unidad</option>
+                                <option th:each="unidad : ${unidades}" th:value="${unidad}" th:text="${unidad}"></option>
+                            </select>
                             <small class="text-danger" th:if="${#fields.hasErrors('unidad')}" th:errors="*{unidad}"></small>
                         </div>
                     </div>
@@ -85,4 +88,3 @@
 </section>
 </body>
 </html>
-

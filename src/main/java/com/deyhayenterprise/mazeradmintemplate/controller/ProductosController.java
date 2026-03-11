@@ -1,5 +1,7 @@
 package com.deyhayenterprise.mazeradmintemplate.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,8 +15,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.deyhayenterprise.mazeradmintemplate.service.FabricanteService;
 import com.deyhayenterprise.mazeradmintemplate.service.ProductoCategoriaService;
 import com.deyhayenterprise.mazeradmintemplate.service.ProductoService;
+import com.deyhayenterprise.mazeradmintemplate.service.UnidadMedidaService;
 import com.deyhayenterprise.mazeradmintemplate.web.form.ProductoCategoriaForm;
 import com.deyhayenterprise.mazeradmintemplate.web.form.ProductoCreateForm;
+import com.deyhayenterprise.mazeradmintemplate.web.form.UnidadMedidaForm;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +33,7 @@ public class ProductosController {
     private final ProductoService productoService;
     private final ProductoCategoriaService productoCategoriaService;
     private final FabricanteService fabricanteService;
+    private final UnidadMedidaService unidadMedidaService;
 
     @GetMapping("/nuevo")
     public String nuevoProducto(Model model) {
@@ -37,6 +42,7 @@ public class ProductosController {
         model.addAttribute("pageSubtitle", "Registrar un nuevo producto");
         model.addAttribute("categorias", productoCategoriaService.findAllCategoryNames());
         model.addAttribute("fabricantes", fabricanteService.findAll());
+        model.addAttribute("unidades", unidadMedidaService.findAllNames());
         if (!model.containsAttribute("productoForm")) {
             model.addAttribute("productoForm", new ProductoCreateForm());
         }
@@ -53,6 +59,7 @@ public class ProductosController {
             model.addAttribute("pageSubtitle", "Registrar un nuevo producto");
             model.addAttribute("categorias", productoCategoriaService.findAllCategoryNames());
             model.addAttribute("fabricantes", fabricanteService.findAll());
+            model.addAttribute("unidades", unidadMedidaService.findAllNames());
             return "productos/nuevo";
         }
 
@@ -65,6 +72,7 @@ public class ProductosController {
             model.addAttribute("pageSubtitle", "Registrar un nuevo producto");
             model.addAttribute("categorias", productoCategoriaService.findAllCategoryNames());
             model.addAttribute("fabricantes", fabricanteService.findAll());
+            model.addAttribute("unidades", unidadMedidaService.findAllNames());
             model.addAttribute("errorMessage", ex.getMessage());
             return "productos/nuevo";
         }
@@ -179,6 +187,107 @@ public class ProductosController {
         return "redirect:/productos/categorias";
     }
 
+    @GetMapping("/categorias/unidades")
+    public String unidades(Model model) {
+        model.addAttribute("pageHeading", "Unidades de Medida");
+        model.addAttribute("pageSubtitle", "Administrar unidades para productos");
+        model.addAttribute("unidades", unidadMedidaService.findAllActive());
+        if (!model.containsAttribute("unidadForm")) {
+            model.addAttribute("unidadForm", new UnidadMedidaForm());
+        }
+        model.addAttribute("editMode", false);
+        return "productos/unidades";
+    }
+
+    @PostMapping("/categorias/unidades")
+    public String crearUnidad(@Valid @ModelAttribute("unidadForm") UnidadMedidaForm unidadForm,
+                              BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes,
+                              Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageHeading", "Unidades de Medida");
+            model.addAttribute("pageSubtitle", "Administrar unidades para productos");
+            model.addAttribute("unidades", unidadMedidaService.findAllActive());
+            model.addAttribute("editMode", false);
+            return "productos/unidades";
+        }
+
+        try {
+            unidadMedidaService.create(unidadForm);
+            redirectAttributes.addFlashAttribute("successMessage", "Unidad creada correctamente.");
+            return "redirect:/productos/categorias/unidades";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("pageHeading", "Unidades de Medida");
+            model.addAttribute("pageSubtitle", "Administrar unidades para productos");
+            model.addAttribute("unidades", unidadMedidaService.findAllActive());
+            model.addAttribute("editMode", false);
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "productos/unidades";
+        }
+    }
+
+    @GetMapping("/categorias/unidades/editar/{id}")
+    public String editarUnidad(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            var unidad = unidadMedidaService.findActiveById(id);
+            UnidadMedidaForm form = new UnidadMedidaForm();
+            form.setNombre(unidad.getNombre());
+            form.setDescripcion(unidad.getDescripcion());
+
+            model.addAttribute("pageHeading", "Unidades de Medida");
+            model.addAttribute("pageSubtitle", "Administrar unidades para productos");
+            model.addAttribute("unidades", unidadMedidaService.findAllActive());
+            model.addAttribute("unidadForm", form);
+            model.addAttribute("editMode", true);
+            model.addAttribute("unidadId", id);
+            return "productos/unidades";
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/productos/categorias/unidades";
+        }
+    }
+
+    @PostMapping("/categorias/unidades/editar/{id}")
+    public String actualizarUnidad(@PathVariable Long id,
+                                   @Valid @ModelAttribute("unidadForm") UnidadMedidaForm unidadForm,
+                                   BindingResult bindingResult,
+                                   RedirectAttributes redirectAttributes,
+                                   Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageHeading", "Unidades de Medida");
+            model.addAttribute("pageSubtitle", "Administrar unidades para productos");
+            model.addAttribute("unidades", unidadMedidaService.findAllActive());
+            model.addAttribute("editMode", true);
+            model.addAttribute("unidadId", id);
+            return "productos/unidades";
+        }
+
+        try {
+            unidadMedidaService.update(id, unidadForm);
+            redirectAttributes.addFlashAttribute("successMessage", "Unidad actualizada correctamente.");
+            return "redirect:/productos/categorias/unidades";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("pageHeading", "Unidades de Medida");
+            model.addAttribute("pageSubtitle", "Administrar unidades para productos");
+            model.addAttribute("unidades", unidadMedidaService.findAllActive());
+            model.addAttribute("editMode", true);
+            model.addAttribute("unidadId", id);
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "productos/unidades";
+        }
+    }
+
+    @PostMapping("/categorias/unidades/eliminar/{id}")
+    public String eliminarUnidad(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            unidadMedidaService.delete(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Unidad eliminada correctamente.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/productos/categorias/unidades";
+    }
+
     @GetMapping("/editar/{id}")
     public String editarProducto(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
@@ -186,6 +295,7 @@ public class ProductosController {
             model.addAttribute("pageSubtitle", "Actualizar datos del producto");
             model.addAttribute("categorias", productoCategoriaService.findAllCategoryNames());
             model.addAttribute("fabricantes", fabricanteService.findAll());
+            model.addAttribute("unidades", unidadMedidaService.findAllNames());
             model.addAttribute("productoId", id);
             if (!model.containsAttribute("productoForm")) {
                 ProductoCreateForm form = new ProductoCreateForm();
@@ -217,6 +327,7 @@ public class ProductosController {
             model.addAttribute("pageSubtitle", "Actualizar datos del producto");
             model.addAttribute("categorias", productoCategoriaService.findAllCategoryNames());
             model.addAttribute("fabricantes", fabricanteService.findAll());
+            model.addAttribute("unidades", unidadMedidaService.findAllNames());
             model.addAttribute("productoId", id);
             return "productos/editar";
         }
@@ -230,6 +341,7 @@ public class ProductosController {
             model.addAttribute("pageSubtitle", "Actualizar datos del producto");
             model.addAttribute("categorias", productoCategoriaService.findAllCategoryNames());
             model.addAttribute("fabricantes", fabricanteService.findAll());
+            model.addAttribute("unidades", unidadMedidaService.findAllNames());
             model.addAttribute("productoId", id);
             model.addAttribute("errorMessage", ex.getMessage());
             return "productos/editar";

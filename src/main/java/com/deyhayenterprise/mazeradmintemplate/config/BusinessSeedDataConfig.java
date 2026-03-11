@@ -13,12 +13,14 @@ import com.deyhayenterprise.mazeradmintemplate.entity.ClienteCategoria;
 import com.deyhayenterprise.mazeradmintemplate.entity.Fabricante;
 import com.deyhayenterprise.mazeradmintemplate.entity.Producto;
 import com.deyhayenterprise.mazeradmintemplate.entity.ProductoCategoria;
+import com.deyhayenterprise.mazeradmintemplate.entity.UnidadMedida;
 import com.deyhayenterprise.mazeradmintemplate.entity.Venta;
 import com.deyhayenterprise.mazeradmintemplate.repository.ClienteCategoriaRepository;
 import com.deyhayenterprise.mazeradmintemplate.repository.ClienteRepository;
 import com.deyhayenterprise.mazeradmintemplate.repository.FabricanteRepository;
 import com.deyhayenterprise.mazeradmintemplate.repository.ProductoCategoriaRepository;
 import com.deyhayenterprise.mazeradmintemplate.repository.ProductoRepository;
+import com.deyhayenterprise.mazeradmintemplate.repository.UnidadMedidaRepository;
 import com.deyhayenterprise.mazeradmintemplate.repository.VentaRepository;
 
 @Configuration
@@ -30,8 +32,22 @@ public class BusinessSeedDataConfig {
                                        VentaRepository ventaRepository,
                                        FabricanteRepository fabricanteRepository,
                                        ClienteCategoriaRepository clienteCategoriaRepository,
-                                       ProductoCategoriaRepository productoCategoriaRepository) {
+                                       ProductoCategoriaRepository productoCategoriaRepository,
+                                       UnidadMedidaRepository unidadMedidaRepository) {
         return args -> {
+            if (unidadMedidaRepository.count() == 0) {
+                unidadMedidaRepository.saveAll(List.of(
+                        buildUnidad("Unidad", "Unidad base"),
+                        buildUnidad("Caja", "Empaque en caja"),
+                        buildUnidad("Paquete", "Empaque en paquete"),
+                        buildUnidad("Kg", "Kilogramo"),
+                        buildUnidad("Gramo", "Gramo"),
+                        buildUnidad("Litro", "Litro"),
+                        buildUnidad("Ml", "Mililitro"),
+                        buildUnidad("Metro", "Metro lineal")
+                ));
+            }
+
             if (clienteCategoriaRepository.count() == 0) {
                 clienteCategoriaRepository.saveAll(List.of(
                         buildClienteCategoria("VIP", "Clientes premium"),
@@ -140,5 +156,13 @@ public class BusinessSeedDataConfig {
         c.setDescripcion(descripcion);
         c.setActivo(true);
         return c;
+    }
+
+    private UnidadMedida buildUnidad(String nombre, String descripcion) {
+        UnidadMedida u = new UnidadMedida();
+        u.setNombre(nombre);
+        u.setDescripcion(descripcion);
+        u.setActivo(true);
+        return u;
     }
 }

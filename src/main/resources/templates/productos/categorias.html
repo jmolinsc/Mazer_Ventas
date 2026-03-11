@@ -8,8 +8,9 @@
 )}">
 <section class="section">
     <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="card-title">Administrar Categorias</h4>
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/productos/categorias/unidades}">Unidades de Medida</a>
         </div>
         <div class="card-body">
             <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
