@@ -71,16 +71,15 @@ class BusinessFlowIntegrationTests {
 
         mockMvc.perform(post("/ventas/nueva").session(session)
                         .param("clienteId", String.valueOf(cliente.getId()))
-                        .param("productoId", String.valueOf(producto.getId()))
-                        .param("cantidad", "2")
-                        .param("fecha", "2026-03-10"))
+                        .param("fecha", "2026-03-10")
+                        .param("detalles[0].productoId", String.valueOf(producto.getId()))
+                        .param("detalles[0].cantidad", "2"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/ventas/listar"));
 
         mockMvc.perform(get("/ventas/listar").session(session))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Cliente " + suffix)))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Producto " + suffix)));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Cliente " + suffix)));
     }
 
     @Test
@@ -119,11 +118,11 @@ class BusinessFlowIntegrationTests {
 
         mockMvc.perform(post("/ventas/nueva").session(session)
                         .param("clienteId", String.valueOf(cliente.getId()))
-                        .param("productoId", String.valueOf(producto.getId()))
-                        .param("cantidad", "5")
-                        .param("fecha", "2026-03-10"))
+                        .param("fecha", "2026-03-10")
+                        .param("detalles[0].productoId", String.valueOf(producto.getId()))
+                        .param("detalles[0].cantidad", "5"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Stock insuficiente para registrar la venta.")));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Stock insuficiente para el producto")));
     }
 
     @Test

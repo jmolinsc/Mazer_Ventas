@@ -15,6 +15,7 @@ import com.deyhayenterprise.mazeradmintemplate.entity.Producto;
 import com.deyhayenterprise.mazeradmintemplate.entity.ProductoCategoria;
 import com.deyhayenterprise.mazeradmintemplate.entity.UnidadMedida;
 import com.deyhayenterprise.mazeradmintemplate.entity.Venta;
+import com.deyhayenterprise.mazeradmintemplate.entity.VentaDetalle;
 import com.deyhayenterprise.mazeradmintemplate.repository.ClienteCategoriaRepository;
 import com.deyhayenterprise.mazeradmintemplate.repository.ClienteRepository;
 import com.deyhayenterprise.mazeradmintemplate.repository.FabricanteRepository;
@@ -104,13 +105,23 @@ public class BusinessSeedDataConfig {
             if (ventaRepository.count() == 0 && clienteRepository.count() > 0 && productoRepository.count() > 0) {
                 Cliente cliente = clienteRepository.findAll().get(0);
                 Producto producto = productoRepository.findAll().get(0);
+
                 Venta venta = new Venta();
                 venta.setCliente(cliente);
                 venta.setProducto(producto);
                 venta.setCantidad(1);
                 venta.setFecha(LocalDate.now());
-                venta.setTotal(producto.getPrecio());
                 venta.setEstado("COMPLETADA");
+
+                VentaDetalle detalle = new VentaDetalle();
+                detalle.setVenta(venta);
+                detalle.setProducto(producto);
+                detalle.setCantidad(1);
+                detalle.setPrecioUnitario(producto.getPrecio());
+                detalle.setSubtotal(producto.getPrecio());
+                venta.getDetalles().add(detalle);
+                venta.setTotal(producto.getPrecio());
+
                 ventaRepository.save(venta);
                 if (producto.getStock() > 0) {
                     producto.setStock(producto.getStock() - 1);

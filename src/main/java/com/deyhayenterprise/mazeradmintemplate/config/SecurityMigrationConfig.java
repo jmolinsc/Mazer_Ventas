@@ -60,7 +60,8 @@ public class SecurityMigrationConfig {
                 new OptionDef("PRODUCTOS_EDITAR",     "Editar Producto",     "/productos/editar",     "Editar datos del producto",  4, "PRODUCTOS"),
                 new OptionDef("PRODUCTOS_ELIMINAR",   "Eliminar Producto",   "/productos/eliminar",   "Eliminar producto",          5, "PRODUCTOS"),
                 new OptionDef("FABRICANTES_EDITAR",  "Editar Fabricante",  "/fabricantes/editar",  "Editar datos del fabricante", 3, "FABRICANTES"),
-                new OptionDef("FABRICANTES_ELIMINAR", "Eliminar Fabricante", "/fabricantes/eliminar", "Eliminar fabricante",        4, "FABRICANTES")
+                new OptionDef("FABRICANTES_ELIMINAR", "Eliminar Fabricante", "/fabricantes/eliminar", "Eliminar fabricante",        4, "FABRICANTES"),
+                new OptionDef("VENTAS_EDITAR",       "Editar Venta",       "/ventas/editar",       "Editar venta",               4, "VENTAS")
         );
 
         for (OptionDef def : toAdd) {
@@ -86,11 +87,11 @@ public class SecurityMigrationConfig {
         assignOptions(roles.get("ADMIN"),
                 List.of(
                         "CLIENTES_EDITAR", "CLIENTES_ELIMINAR", "PRODUCTOS_NUEVO", "PRODUCTOS_LISTAR", "PRODUCTOS_CATEGORIAS", "PRODUCTOS_EDITAR", "PRODUCTOS_ELIMINAR",
-                        "FABRICANTES_EDITAR", "FABRICANTES_ELIMINAR"),
+                        "FABRICANTES_EDITAR", "FABRICANTES_ELIMINAR", "VENTAS_EDITAR"),
                 existing);
 
         assignOptions(roles.get("VENDEDOR"),
-                List.of("PRODUCTOS_LISTAR"),
+                List.of("PRODUCTOS_LISTAR", "VENTAS_EDITAR"),
                 existing);
 
         assignOptions(roles.get("BODEGA"),

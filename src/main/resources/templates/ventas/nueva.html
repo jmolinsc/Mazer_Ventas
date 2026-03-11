@@ -9,54 +9,115 @@
 <section class="section">
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Nueva Venta</h4>
+            <h4 class="card-title">Nueva Venta (Maestro-Detalle)</h4>
         </div>
         <div class="card-body">
             <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
-            <form method="post" th:action="@{/ventas/nueva}" th:object="${ventaForm}">
-                <div class="row">
+            <form method="post" th:action="@{${formAction}}" th:object="${ventaForm}">
+                <div class="row mb-3">
                     <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="clienteId" class="form-label">Cliente</label>
-                            <select class="form-select" id="clienteId" th:field="*{clienteId}">
-                                <option value="">Seleccionar cliente</option>
-                                <option th:each="cliente : ${clientes}" th:value="${cliente.id}" th:text="${cliente.nombre}"></option>
-                            </select>
-                            <small class="text-danger" th:if="${#fields.hasErrors('clienteId')}" th:errors="*{clienteId}"></small>
-                        </div>
+                        <label for="clienteId" class="form-label">Cliente</label>
+                        <select class="form-select" id="clienteId" th:field="*{clienteId}">
+                            <option value="">Seleccionar cliente</option>
+                            <option th:each="cliente : ${clientes}" th:value="${cliente.id}" th:text="${cliente.nombre}"></option>
+                        </select>
+                        <small class="text-danger" th:if="${#fields.hasErrors('clienteId')}" th:errors="*{clienteId}"></small>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="fecha" class="form-label">Fecha</label>
-                            <input type="date" class="form-control" id="fecha" th:field="*{fecha}">
-                            <small class="text-danger" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}"></small>
-                        </div>
+                        <label for="fecha" class="form-label">Fecha</label>
+                        <input type="date" class="form-control" id="fecha" th:field="*{fecha}">
+                        <small class="text-danger" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}"></small>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="form-group mb-3">
-                            <label for="productoId" class="form-label">Producto</label>
-                            <select class="form-select" id="productoId" th:field="*{productoId}">
-                                <option value="">Seleccionar producto</option>
-                                <option th:each="producto : ${productos}" th:value="${producto.id}" th:text="${producto.nombre + ' - Stock: ' + producto.stock + ' - $' + producto.precio}"></option>
-                            </select>
-                            <small class="text-danger" th:if="${#fields.hasErrors('productoId')}" th:errors="*{productoId}"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group mb-3">
-                            <label for="cantidad" class="form-label">Cantidad</label>
-                            <input type="number" class="form-control" id="cantidad" th:field="*{cantidad}" min="1">
-                            <small class="text-danger" th:if="${#fields.hasErrors('cantidad')}" th:errors="*{cantidad}"></small>
-                        </div>
-                    </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0">Detalle de la Venta</h5>
+                    <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modalProductos">Agregar producto</button>
                 </div>
-                <button type="submit" class="btn btn-primary">Guardar Venta</button>
-                <button type="reset" class="btn btn-secondary">Limpiar</button>
+
+                <div class="table-responsive">
+                    <table class="table table-striped" id="detalleTable">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Subtotal</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detalleBody"></tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="2" class="text-end">Totales</th>
+                                <th id="footerCantidad">0</th>
+                                <th id="footerTotal">0.00</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div id="detalleInputs">
+                    <th:block th:each="d, i : *{detalles}">
+                        <input type="hidden" th:name="${'detalles[' + i.index + '].productoId'}" th:value="${d.productoId}" />
+                        <input type="hidden" th:name="${'detalles[' + i.index + '].cantidad'}" th:value="${d.cantidad}" />
+                    </th:block>
+                </div>
+                <small class="text-danger" th:if="${#fields.hasErrors('detalles')}" th:errors="*{detalles}"></small>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-success">Guardar Venta</button>
+                    <button type="reset" class="btn btn-secondary" id="btnLimpiar">Limpiar</button>
+                </div>
             </form>
         </div>
     </div>
+
+    <!-- Modal productos -->
+    <div class="modal fade" id="modalProductos" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Seleccionar productos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped" id="tableProductosModal">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Stock</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="producto : ${productos}">
+                                <td th:text="${producto.codigo}">P001</td>
+                                <td th:text="${producto.nombre}">Producto</td>
+                                <td th:text="${producto.stock}">0</td>
+                                <td th:text="${#numbers.formatDecimal(producto.precio, 1, 'POINT', 2, 'COMMA')}">0.00</td>
+                                <td style="width: 120px;">
+                                    <input type="number" min="1" class="form-control modal-cantidad" value="1">
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-sm btn-agregar-producto"
+                                            th:attr="data-id=${producto.id},data-nombre=${producto.nombre},data-precio=${producto.precio},data-stock=${producto.stock}">
+                                        Agregar
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/venta-form.js}"></script>
 </section>
 </body>
 </html>

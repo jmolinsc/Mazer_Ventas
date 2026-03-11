@@ -19,22 +19,24 @@
                     <tr>
                         <th>ID Venta</th>
                         <th>Cliente</th>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
+                        <th>Items</th>
                         <th>Fecha</th>
                         <th>Total</th>
                         <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="venta : ${ventas}">
                         <td th:text="${venta.id}">1</td>
                         <td th:text="${venta.cliente.nombre}">Cliente</td>
-                        <td th:text="${venta.producto.nombre}">Producto</td>
-                        <td th:text="${venta.cantidad}">1</td>
+                        <td th:text="${venta.detalles != null ? venta.detalles.size() : 0}">1</td>
                         <td th:text="${venta.fecha}">2026-03-10</td>
                         <td th:text="${#numbers.formatDecimal(venta.total, 1, 'POINT', 2, 'COMMA')}">0.00</td>
                         <td><span class="badge bg-success" th:text="${venta.estado}">COMPLETADA</span></td>
+                        <td>
+                            <a class="btn btn-warning btn-sm" th:href="@{'/ventas/editar/' + ${venta.id}}">Editar</a>
+                        </td>
                     </tr>
                 </tbody>
             </table>
