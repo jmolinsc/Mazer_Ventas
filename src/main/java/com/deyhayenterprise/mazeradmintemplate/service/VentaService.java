@@ -54,7 +54,7 @@ public class VentaService {
     }
 
     @Transactional
-    public Venta update(Long id, VentaCreateForm form) {
+    public Venta update(Long id, VentaCreateForm form, String accion) {
         Venta venta = findById(id);
         Cliente cliente = clienteRepository.findById(form.getClienteId())
                 .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado."));

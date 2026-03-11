@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.deyhayenterprise.mazeradmintemplate.service.ClienteService;
@@ -51,6 +52,7 @@ public class VentasController {
     @PostMapping("/nueva")
     public String crearVenta(@Valid @ModelAttribute("ventaForm") VentaCreateForm ventaForm,
                              BindingResult bindingResult,
+                             @RequestParam(name = "accion", defaultValue = "guardar") String accion,
                              RedirectAttributes redirectAttributes,
                              Model model) {
         if (bindingResult.hasErrors()) {
@@ -63,8 +65,9 @@ public class VentasController {
         }
 
         try {
+            log.info("Accion recibida en nueva venta: {}", accion);
             ventaService.create(ventaForm);
-            redirectAttributes.addFlashAttribute("successMessage", "Venta registrada correctamente.");
+            redirectAttributes.addFlashAttribute("successMessage", "Venta registrada correctamente. Acción: " + accion);
             return "redirect:/ventas/listar";
         } catch (IllegalArgumentException ex) {
             model.addAttribute("pageHeading", "Nueva Venta");
@@ -108,6 +111,7 @@ public class VentasController {
     public String actualizarVenta(@PathVariable Long id,
                                   @Valid @ModelAttribute("ventaForm") VentaCreateForm ventaForm,
                                   BindingResult bindingResult,
+                                  @RequestParam(name = "accion", defaultValue = "guardar") String accion,
                                   RedirectAttributes redirectAttributes,
                                   Model model) {
         if (bindingResult.hasErrors()) {
@@ -120,8 +124,9 @@ public class VentasController {
         }
 
         try {
-            ventaService.update(id, ventaForm);
-            redirectAttributes.addFlashAttribute("successMessage", "Venta actualizada correctamente.");
+            log.info("Accion recibida en editar venta {}: {}", id, accion);
+            ventaService.update(id, ventaForm, accion);
+            redirectAttributes.addFlashAttribute("successMessage", "Venta actualizada correctamente. Acción: " + accion);
             return "redirect:/ventas/listar";
         } catch (IllegalArgumentException ex) {
             model.addAttribute("pageHeading", "Editar Venta");
