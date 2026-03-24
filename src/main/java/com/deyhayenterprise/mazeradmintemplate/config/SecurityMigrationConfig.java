@@ -45,6 +45,13 @@ public class SecurityMigrationConfig {
                 .stream()
                 .collect(LinkedHashMap::new, (m, menu) -> m.put(menu.getCodigo(), menu), Map::putAll);
 
+        if (!menus.containsKey("MOVIMIENTOS")) {
+            AppMenu movimientos = new AppMenu("MOVIMIENTOS", "Movimientos", "Configuración", "bi bi-file-earmark-text", 9);
+            appMenuRepository.save(movimientos);
+            menus.put(movimientos.getCodigo(), movimientos);
+            log.info("Migracion: menu MOVIMIENTOS creado.");
+        }
+
         Map<String, MenuOption> existing = menuOptionRepository.findAll()
                 .stream()
                 .collect(LinkedHashMap::new, (m, o) -> m.put(o.getCodigo(), o), Map::putAll);
@@ -62,7 +69,10 @@ public class SecurityMigrationConfig {
                 new OptionDef("FABRICANTES_EDITAR",  "Editar Fabricante",  "/fabricantes/editar",  "Editar datos del fabricante", 3, "FABRICANTES"),
                 new OptionDef("FABRICANTES_ELIMINAR", "Eliminar Fabricante", "/fabricantes/eliminar", "Eliminar fabricante",        4, "FABRICANTES"),
                 new OptionDef("VENTAS_EDITAR",       "Editar Venta",       "/ventas/editar",       "Editar venta",               4, "VENTAS"),
-                new OptionDef("CONFIG_MENUS",       "Menus",              "/config/menus",        "Administracion de menus",    4, "CONFIGURACION")
+                new OptionDef("CONFIG_MENUS",       "Menus",              "/config/menus",        "Administracion de menus",    4, "CONFIGURACION"),
+                new OptionDef("CONFIG_MOVIMIENTOS_MODULOS", "Modulo", "/config/movimientos/modulos", "Mantenimiento de módulos", 1, "MOVIMIENTOS"),
+                new OptionDef("CONFIG_MOVIMIENTOS_COMPORTAMIENTOS", "Comportamiento", "/config/movimientos/comportamientos", "Mantenimiento de comportamientos", 2, "MOVIMIENTOS"),
+                new OptionDef("CONFIG_MOVIMIENTOS_MOVTIPOS", "Movtipo", "/config/movimientos/movtipos", "Mantenimiento de tipos de movimiento", 3, "MOVIMIENTOS")
         );
 
         for (OptionDef def : toAdd) {
@@ -88,7 +98,8 @@ public class SecurityMigrationConfig {
         assignOptions(roles.get("ADMIN"),
                 List.of(
                         "CLIENTES_EDITAR", "CLIENTES_ELIMINAR", "PRODUCTOS_NUEVO", "PRODUCTOS_LISTAR", "PRODUCTOS_CATEGORIAS", "PRODUCTOS_EDITAR", "PRODUCTOS_ELIMINAR",
-                        "FABRICANTES_EDITAR", "FABRICANTES_ELIMINAR", "VENTAS_EDITAR", "CONFIG_MENUS"),
+                        "FABRICANTES_EDITAR", "FABRICANTES_ELIMINAR", "VENTAS_EDITAR", "CONFIG_MENUS",
+                        "CONFIG_MOVIMIENTOS_MODULOS", "CONFIG_MOVIMIENTOS_COMPORTAMIENTOS", "CONFIG_MOVIMIENTOS_MOVTIPOS"),
                 existing);
 
         assignOptions(roles.get("VENDEDOR"),

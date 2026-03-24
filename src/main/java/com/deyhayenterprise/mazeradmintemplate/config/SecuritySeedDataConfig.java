@@ -50,7 +50,8 @@ public class SecuritySeedDataConfig {
                 new AppMenu("PRODUCTOS", "Productos", "Sistema de Ventas", "bi bi-tag-fill", 5),
                 new AppMenu("FABRICANTES", "Fabricantes", "Sistema de Ventas", "bi bi-hammer", 6),
                 new AppMenu("CUENTAS_COBRAR", "Cuentas por Cobrar", "Sistema de Ventas", "bi bi-cash-coin", 7),
-                new AppMenu("CONFIGURACION", "Configuración", "Configuración", "bi bi-gear-fill", 8)
+                new AppMenu("CONFIGURACION", "Configuración", "Configuración", "bi bi-gear-fill", 8),
+                new AppMenu("MOVIMIENTOS", "Movimientos", "Configuración", "bi bi-file-earmark-text", 9)
         );
 
         repository.saveAll(menus);
@@ -87,7 +88,10 @@ public class SecuritySeedDataConfig {
                     new MenuOption("CONFIG_EMPRESA", "Datos Empresa", "/config/empresa", "Datos corporativos", 1, menus.get("CONFIGURACION")),
                     new MenuOption("CONFIG_USUARIOS", "Usuarios", "/config/usuarios", "Administración de usuarios", 2, menus.get("CONFIGURACION")),
                     new MenuOption("CONFIG_PERMISOS", "Permisos", "/config/permisos", "Asignación de permisos", 3, menus.get("CONFIGURACION")),
-                    new MenuOption("CONFIG_MENUS", "Menus", "/config/menus", "Administración de menús", 4, menus.get("CONFIGURACION"))
+                    new MenuOption("CONFIG_MENUS", "Menus", "/config/menus", "Administración de menús", 4, menus.get("CONFIGURACION")),
+                    new MenuOption("CONFIG_MOVIMIENTOS_MODULOS", "Modulo", "/config/movimientos/modulos", "Mantenimiento de módulos", 1, menus.get("MOVIMIENTOS")),
+                    new MenuOption("CONFIG_MOVIMIENTOS_COMPORTAMIENTOS", "Comportamiento", "/config/movimientos/comportamientos", "Mantenimiento de comportamientos", 2, menus.get("MOVIMIENTOS")),
+                    new MenuOption("CONFIG_MOVIMIENTOS_MOVTIPOS", "Movtipo", "/config/movimientos/movtipos", "Mantenimiento de tipos de movimiento", 3, menus.get("MOVIMIENTOS"))
             ));
         }
 
@@ -166,4 +170,3 @@ public class SecuritySeedDataConfig {
         repository.saveAll(List.of(admin, vendedor, bodega, contador));
     }
 }
-

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body th:replace="~{fragments/layout :: layout(
+    'Movimientos - Comportamientos',
+    ${pageHeading},
+    ${pageSubtitle},
+    ~{::section}
+)}">
+<section class="section">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="card-title mb-0">Mantenimiento de Comportamientos</h4>
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-primary btn-sm" th:href="@{/config/movimientos/modulos}">Módulos</a>
+                <a class="btn btn-outline-primary btn-sm" th:href="@{/config/movimientos/movtipos}">Movtipos</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+            <form class="row g-3 mb-4" method="post"
+                  th:action="${editMode} ? @{'/config/movimientos/comportamientos/editar/' + ${comportamientoId}} : @{/config/movimientos/comportamientos}"
+                  th:object="${comportamientoForm}">
+                <div class="col-md-4">
+                    <label class="form-label" for="nombre">Nombre</label>
+                    <input id="nombre" class="form-control" th:field="*{nombre}" type="text" placeholder="FACTURA, DEVOLUCION...">
+                    <small class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></small>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="moduloId">Módulo</label>
+                    <select id="moduloId" class="form-select" th:field="*{moduloId}">
+                        <option value="">Seleccionar módulo</option>
+                        <option th:each="m : ${modulos}" th:value="${m.id}" th:text="${m.nombre}">VTA</option>
+                    </select>
+                    <small class="text-danger" th:if="${#fields.hasErrors('moduloId')}" th:errors="*{moduloId}"></small>
+                </div>
+                <div class="col-md-2 d-grid align-items-end">
+                    <button class="btn btn-primary" type="submit" th:text="${editMode} ? 'Actualizar' : 'Crear'">Crear</button>
+                </div>
+            </form>
+
+            <table class="table table-striped" id="table1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Módulo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${comportamientos}">
+                        <td th:text="${c.id}">1</td>
+                        <td th:text="${c.nombre}">FACTURA</td>
+                        <td th:text="${c.modulo.nombre}">VTA</td>
+                        <td class="d-flex gap-2">
+                            <a class="btn btn-warning btn-sm" th:href="@{'/config/movimientos/comportamientos/editar/' + ${c.id}}">Editar</a>
+                            <form method="post" th:action="@{'/config/movimientos/comportamientos/eliminar/' + ${c.id}}" onsubmit="return confirm('Eliminar comportamiento?');">
+                                <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>
+
