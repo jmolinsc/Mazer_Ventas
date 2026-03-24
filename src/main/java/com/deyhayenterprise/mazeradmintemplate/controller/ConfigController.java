@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.deyhayenterprise.mazeradmintemplate.service.AppUserService;
+import com.deyhayenterprise.mazeradmintemplate.service.MenuAdminService;
 import com.deyhayenterprise.mazeradmintemplate.service.RoleService;
+import com.deyhayenterprise.mazeradmintemplate.web.form.AppMenuForm;
+import com.deyhayenterprise.mazeradmintemplate.web.form.MenuOptionForm;
 import com.deyhayenterprise.mazeradmintemplate.web.form.RoleCreateForm;
 import com.deyhayenterprise.mazeradmintemplate.web.form.RolePermissionUpdateForm;
 import com.deyhayenterprise.mazeradmintemplate.web.form.UserCreateForm;
@@ -29,6 +32,7 @@ public class ConfigController {
 
     private final AppUserService appUserService;
     private final RoleService roleService;
+    private final MenuAdminService menuAdminService;
 
     @GetMapping("/empresa")
     public String empresa(Model model) {
@@ -134,6 +138,81 @@ public class ConfigController {
         roleService.updateRolePermissions(roleId, permissionForm.getOptionIds());
         redirectAttributes.addFlashAttribute("successMessage", "Permisos actualizados correctamente.");
         return "redirect:/config/permisos?roleId=" + roleId;
+    }
+
+    @GetMapping("/menus")
+    public String menus(Model model) {
+        log.info("Gestión de menús");
+        model.addAttribute("pageHeading", "Gestión de Menús");
+        model.addAttribute("pageSubtitle", "Crear menús y asociar URLs");
+        model.addAttribute("menus", menuAdminService.findAllMenus());
+        if (!model.containsAttribute("menuForm")) {
+            AppMenuForm menuForm = new AppMenuForm();
+            menuForm.setOrdenVisual(0);
+            model.addAttribute("menuForm", menuForm);
+        }
+        if (!model.containsAttribute("menuOptionForm")) {
+            MenuOptionForm optionForm = new MenuOptionForm();
+            optionForm.setOrdenVisual(0);
+            model.addAttribute("menuOptionForm", optionForm);
+        }
+        return "config/menus";
+    }
+
+    @PostMapping("/menus")
+    public String crearMenu(@Valid @ModelAttribute("menuForm") AppMenuForm menuForm,
+                            BindingResult bindingResult,
+                            RedirectAttributes redirectAttributes,
+                            Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageHeading", "Gestión de Menús");
+            model.addAttribute("pageSubtitle", "Crear menús y asociar URLs");
+            model.addAttribute("menus", menuAdminService.findAllMenus());
+            if (!model.containsAttribute("menuOptionForm")) {
+                MenuOptionForm optionForm = new MenuOptionForm();
+                optionForm.setOrdenVisual(0);
+                model.addAttribute("menuOptionForm", optionForm);
+            }
+            return "config/menus";
+        }
+
+        try {
+            menuAdminService.createMenu(menuForm);
+            redirectAttributes.addFlashAttribute("successMessage", "Menú creado correctamente.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.menuForm", bindingResult);
+            redirectAttributes.addFlashAttribute("menuForm", menuForm);
+        }
+        return "redirect:/config/menus";
+    }
+
+    @PostMapping("/menus/opciones")
+    public String crearOpcion(@Valid @ModelAttribute("menuOptionForm") MenuOptionForm menuOptionForm,
+                              BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes,
+                              Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageHeading", "Gestión de Menús");
+            model.addAttribute("pageSubtitle", "Crear menús y asociar URLs");
+            model.addAttribute("menus", menuAdminService.findAllMenus());
+            if (!model.containsAttribute("menuForm")) {
+                AppMenuForm menuForm = new AppMenuForm();
+                menuForm.setOrdenVisual(0);
+                model.addAttribute("menuForm", menuForm);
+            }
+            return "config/menus";
+        }
+
+        try {
+            menuAdminService.createOption(menuOptionForm);
+            redirectAttributes.addFlashAttribute("successMessage", "Opción de menú creada correctamente.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.menuOptionForm", bindingResult);
+            redirectAttributes.addFlashAttribute("menuOptionForm", menuOptionForm);
+        }
+        return "redirect:/config/menus";
     }
 
     private Long resolveRoleId(Long roleId) {

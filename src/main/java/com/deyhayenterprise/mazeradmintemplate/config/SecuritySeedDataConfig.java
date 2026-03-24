@@ -86,7 +86,8 @@ public class SecuritySeedDataConfig {
                     new MenuOption("COBRAR_REPORTES", "Reportes", "/cuentas-cobrar/reportes", "Analítica de cartera", 3, menus.get("CUENTAS_COBRAR")),
                     new MenuOption("CONFIG_EMPRESA", "Datos Empresa", "/config/empresa", "Datos corporativos", 1, menus.get("CONFIGURACION")),
                     new MenuOption("CONFIG_USUARIOS", "Usuarios", "/config/usuarios", "Administración de usuarios", 2, menus.get("CONFIGURACION")),
-                    new MenuOption("CONFIG_PERMISOS", "Permisos", "/config/permisos", "Asignación de permisos", 3, menus.get("CONFIGURACION"))
+                    new MenuOption("CONFIG_PERMISOS", "Permisos", "/config/permisos", "Asignación de permisos", 3, menus.get("CONFIGURACION")),
+                    new MenuOption("CONFIG_MENUS", "Menus", "/config/menus", "Administración de menús", 4, menus.get("CONFIGURACION"))
             ));
         }
 

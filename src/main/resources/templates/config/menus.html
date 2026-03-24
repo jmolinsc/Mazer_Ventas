@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body th:replace="~{fragments/layout :: layout(
+    'Gestión de Menús - Configuración',
+    ${pageHeading},
+    ${pageSubtitle},
+    ~{::section}
+)}">
+<section class="section">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="card-title mb-0">Administrar menús y URLs</h4>
+            <span class="badge bg-light-primary" th:text="${#lists.size(menus)} + ' menús registrados'">0 menús</span>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="card border shadow-none mb-0">
+                        <div class="card-header"><h5 class="mb-0">Crear menú</h5></div>
+                        <div class="card-body">
+                            <form method="post" th:action="@{/config/menus}" th:object="${menuForm}" class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="codigo" class="form-label">Código</label>
+                                    <input type="text" id="codigo" class="form-control" th:field="*{codigo}" placeholder="EJ: COMPRAS">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('codigo')}" th:errors="*{codigo}">Error</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="nombre" class="form-label">Nombre</label>
+                                    <input type="text" id="nombre" class="form-control" th:field="*{nombre}" placeholder="Compras">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">Error</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="seccion" class="form-label">Sección</label>
+                                    <input type="text" id="seccion" class="form-control" th:field="*{seccion}" placeholder="Sistema de Compras">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('seccion')}" th:errors="*{seccion}">Error</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="icono" class="form-label">Icono</label>
+                                    <input type="text" id="icono" class="form-control" th:field="*{icono}" placeholder="bi bi-grid">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('icono')}" th:errors="*{icono}">Error</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="ordenVisual" class="form-label">Orden</label>
+                                    <input type="number" id="ordenVisual" class="form-control" th:field="*{ordenVisual}" min="0">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('ordenVisual')}" th:errors="*{ordenVisual}">Error</small>
+                                </div>
+                                <div class="col-12 d-grid">
+                                    <button type="submit" class="btn btn-primary">Crear menú</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="card border shadow-none mb-0">
+                        <div class="card-header"><h5 class="mb-0">Crear opción y asociar URL</h5></div>
+                        <div class="card-body">
+                            <form method="post" th:action="@{/config/menus/opciones}" th:object="${menuOptionForm}" class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="codigoOpcion" class="form-label">Código</label>
+                                    <input type="text" id="codigoOpcion" class="form-control" th:field="*{codigo}" placeholder="EJ: COMPRAS_LISTAR">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('codigo')}" th:errors="*{codigo}">Error</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="nombreOpcion" class="form-label">Nombre</label>
+                                    <input type="text" id="nombreOpcion" class="form-control" th:field="*{nombre}" placeholder="Listar compras">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">Error</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="menuId" class="form-label">Menú</label>
+                                    <select id="menuId" class="form-select" th:field="*{menuId}">
+                                        <option value="">Seleccionar menú</option>
+                                        <option th:each="menu : ${menus}" th:value="${menu.id}" th:text="${menu.nombre}">Ventas</option>
+                                    </select>
+                                    <small class="text-danger" th:if="${#fields.hasErrors('menuId')}" th:errors="*{menuId}">Error</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="url" class="form-label">URL</label>
+                                    <input type="text" id="url" class="form-control" th:field="*{url}" placeholder="/compras/listar">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('url')}" th:errors="*{url}">Error</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="descripcion" class="form-label">Descripción</label>
+                                    <input type="text" id="descripcion" class="form-control" th:field="*{descripcion}" placeholder="Pantalla de compras">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}">Error</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="ordenOpcion" class="form-label">Orden</label>
+                                    <input type="number" id="ordenOpcion" class="form-control" th:field="*{ordenVisual}" min="0">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('ordenVisual')}" th:errors="*{ordenVisual}">Error</small>
+                                </div>
+                                <div class="col-12 d-grid">
+                                    <button type="submit" class="btn btn-outline-primary">Crear opción</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="table1">
+                        <thead>
+                            <tr>
+                                <th>Menú</th>
+                                <th>Sección</th>
+                                <th>Icono</th>
+                                <th>Orden</th>
+                                <th>Opciones asociadas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="menu : ${menus}">
+                                <td>
+                                    <div class="fw-bold" th:text="${menu.nombre}">Ventas</div>
+                                    <small class="text-muted" th:text="${menu.codigo}">VENTAS</small>
+                                </td>
+                                <td th:text="${menu.seccion}">Sistema</td>
+                                <td th:text="${menu.icono}">bi bi-grid</td>
+                                <td th:text="${menu.ordenVisual}">1</td>
+                                <td>
+                                    <ul class="mb-0 ps-3">
+                                        <li th:each="option : ${menu.options}">
+                                            <span class="fw-bold" th:text="${option.nombre}">Nueva Venta</span>
+                                            <small class="text-muted" th:text="' (' + ${option.url} + ')'">(/ventas/nueva)</small>
+                                        </li>
+                                        <li th:if="${#sets.isEmpty(menu.options)}" class="text-muted">Sin opciones asociadas</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
+

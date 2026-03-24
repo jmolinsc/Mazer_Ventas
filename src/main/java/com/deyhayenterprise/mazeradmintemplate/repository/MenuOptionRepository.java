@@ -10,6 +10,10 @@ import com.deyhayenterprise.mazeradmintemplate.entity.MenuOption;
 
 public interface MenuOptionRepository extends JpaRepository<MenuOption, Long> {
 
+    boolean existsByCodigoIgnoreCase(String codigo);
+
+    boolean existsByUrlIgnoreCase(String url);
+
     @Query("""
             select distinct o
             from MenuOption o
@@ -47,4 +51,3 @@ public interface MenuOptionRepository extends JpaRepository<MenuOption, Long> {
             """)
     List<MenuOption> findAllActiveWithMenu();
 }
-
