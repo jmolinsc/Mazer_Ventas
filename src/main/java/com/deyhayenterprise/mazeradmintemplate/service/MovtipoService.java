@@ -9,6 +9,8 @@ public interface MovtipoService {
 
     List<Movtipo> findAllActive();
 
+    List<Movtipo> findAllowedByUsernameAndModulo(String username, String modulo);
+
     Movtipo findActiveById(Long id);
 
     Movtipo create(MovtipoForm form);

@@ -64,9 +64,11 @@ public class SecuritySeedDataConfig {
             repository.saveAll(List.of(
                     new MenuOption("DASHBOARD_HOME", "Dashboard", "/index", "Pantalla principal", 1, menus.get("DASHBOARD")),
                     new MenuOption("VENTAS_NUEVA", "Nueva Venta", "/ventas/nueva", "Registrar venta", 1, menus.get("VENTAS")),
-                    new MenuOption("VENTAS_LISTAR", "Listar Ventas", "/ventas/listar", "Consultar ventas", 2, menus.get("VENTAS")),
-                    new MenuOption("VENTAS_REPORTES", "Reportes de Ventas", "/ventas/reportes", "Analítica comercial", 3, menus.get("VENTAS")),
-                    new MenuOption("VENTAS_EDITAR", "Editar Venta", "/ventas/editar", "Editar venta", 4, menus.get("VENTAS")),
+                    new MenuOption("VENTAS_AFECTAR", "Afectar Venta", "/ventas/afectar", "Afectar venta", 2, menus.get("VENTAS")),
+                    new MenuOption("VENTAS_CANCELAR", "Cancelar Venta", "/ventas/cancelar", "Cancelar venta", 3, menus.get("VENTAS")),
+                    new MenuOption("VENTAS_LISTAR", "Listar Ventas", "/ventas/listar", "Consultar ventas", 4, menus.get("VENTAS")),
+                    new MenuOption("VENTAS_REPORTES", "Reportes de Ventas", "/ventas/reportes", "Analítica comercial", 5, menus.get("VENTAS")),
+                    new MenuOption("VENTAS_EDITAR", "Editar Venta", "/ventas/editar", "Editar venta", 6, menus.get("VENTAS")),
                     new MenuOption("INVENTARIO_MOV", "Movimientos", "/inventario/movimientos", "Entradas y salidas", 1, menus.get("INVENTARIO")),
                     new MenuOption("INVENTARIO_EXIST", "Existencias", "/inventario/existencias", "Consulta de stock", 2, menus.get("INVENTARIO")),
                     new MenuOption("INVENTARIO_AJUST", "Ajustes", "/inventario/ajustes", "Ajustes de inventario", 3, menus.get("INVENTARIO")),
@@ -112,6 +114,8 @@ public class SecuritySeedDataConfig {
         vendedor.getOptions().addAll(Set.of(
                 options.get("DASHBOARD_HOME"),
                 options.get("VENTAS_NUEVA"),
+                options.get("VENTAS_AFECTAR"),
+                options.get("VENTAS_CANCELAR"),
                 options.get("VENTAS_LISTAR"),
                 options.get("VENTAS_REPORTES"),
                 options.get("VENTAS_EDITAR"),

@@ -24,9 +24,12 @@ public class SecurityConfig {
                                             DatabaseMenuAuthorizationManager databaseMenuAuthorizationManager) throws Exception {
         http.authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/assets/**", "/js/**", "/css/**", "/images/**", "/webjars/**").permitAll()
+                        .requestMatchers("/assets/**", "/js/**", "/css/**", "/images/**", "/webjars/**", "/uploads/**").permitAll()
                         .requestMatchers("/auth-login", "/error", "/error-403", "/error-404", "/error-500", "/greetingNoParamTest").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
+                        // Los reportes se sirven desde /reportes/** y deben permitir usuario autenticado
+                        // sin depender del menu dinamico para evitar 403 al visualizar/descargar.
+                        .requestMatchers("/reportes/**").authenticated()
                         .anyRequest().access(databaseMenuAuthorizationManager))
                 .formLogin(form -> form
                         .loginPage("/auth-login")

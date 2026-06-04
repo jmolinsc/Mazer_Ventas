@@ -81,6 +81,13 @@
 			<scope>test</scope>
 		</dependency>
 
+
+		<!-- Excel Export -->
+		<!-- Apache POI: si Maven no puede descargarlo, el export es CSV nativo -->
+
+		<!-- Jasper Reports -->
+		<!-- JasperReports: si Maven no puede descargarlo, el PDF es HTML para imprimir -->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

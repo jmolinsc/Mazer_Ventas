@@ -38,11 +38,29 @@ public class Producto {
     @Column(nullable = false, precision = 14, scale = 2)
     private BigDecimal precio;
 
+    @Column(precision = 14, scale = 2)
+    private BigDecimal costo;
+
     @Column(nullable = false)
     private Integer stock;
 
+    @Column(name = "stock_minimo")
+    private Integer stockMinimo;
+
+    @Column(name = "stock_maximo")
+    private Integer stockMaximo;
+
     @Column(nullable = false, length = 20)
     private String unidad;
+
+    @Column(length = 80)
+    private String ubicacion;
+
+    @Column(length = 500)
+    private String descripcion;
+
+    @Column(name = "imagen_url", length = 255)
+    private String imagenUrl;
 
     @Column(nullable = false)
     private boolean activo = true;

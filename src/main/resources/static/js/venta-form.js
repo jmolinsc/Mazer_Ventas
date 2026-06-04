@@ -3,6 +3,7 @@
     const detalleInputs = document.getElementById("detalleInputs");
     const footerCantidad = document.getElementById("footerCantidad");
     const footerTotal = document.getElementById("footerTotal");
+    const isReadOnly = (document.getElementById("isReadOnlyFlag")?.value || "false") === "true";
 
     if (!detalleBody || !detalleInputs) {
         return;
@@ -67,12 +68,14 @@
                  <td>${formatMoney(item.precio)}</td>
                  <td>${item.cantidad}</td>
                  <td>${formatMoney(subtotal)}</td>
-                 <td><button type="button" class="btn btn-danger btn-sm">Quitar</button></td>`;
+                 <td><button type="button" class="btn btn-danger btn-sm" ${isReadOnly ? "disabled" : ""}>Quitar</button></td>`;
 
-            tr.querySelector("button").addEventListener("click", function () {
-                detalleMap.delete(item.productoId);
-                render();
-            });
+            if (!isReadOnly) {
+                tr.querySelector("button").addEventListener("click", function () {
+                    detalleMap.delete(item.productoId);
+                    render();
+                });
+            }
 
             detalleBody.appendChild(tr);
 

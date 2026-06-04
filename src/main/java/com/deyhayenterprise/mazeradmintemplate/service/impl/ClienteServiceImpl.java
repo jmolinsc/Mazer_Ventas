@@ -70,6 +70,15 @@ public class ClienteServiceImpl implements ClienteService {
         cliente.setTelefono(form.getTelefono() == null ? null : form.getTelefono().trim());
         cliente.setCategoria(form.getCategoria().trim());
         cliente.setDireccion(form.getDireccion() == null ? null : form.getDireccion().trim());
+        cliente.setLimiteCredito(form.getLimiteCredito());
+        cliente.setAgente(form.getAgente() == null ? null : form.getAgente().trim());
+        cliente.setDiasCredito(form.getDiasCredito());
+        cliente.setNit(form.getNit() == null ? null : form.getNit().trim());
+        cliente.setNrc(form.getNrc() == null ? null : form.getNrc().trim());
+        cliente.setActividadEconomica(form.getActividadEconomica() == null ? null : form.getActividadEconomica().trim());
+        cliente.setPais(form.getPais() == null ? null : form.getPais().trim());
+        cliente.setDepartamento(form.getDepartamento() == null ? null : form.getDepartamento().trim());
+        cliente.setMunicipio(form.getMunicipio() == null ? null : form.getMunicipio().trim());
     }
 }
 

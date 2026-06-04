@@ -2,6 +2,8 @@ package com.deyhayenterprise.mazeradmintemplate.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.deyhayenterprise.mazeradmintemplate.entity.Producto;
 import com.deyhayenterprise.mazeradmintemplate.web.form.ProductoCreateForm;
 
@@ -11,9 +13,9 @@ public interface ProductoService {
 
     Producto findActiveById(Long id);
 
-    Producto create(ProductoCreateForm form);
+    Producto create(ProductoCreateForm form, MultipartFile imagenFile);
 
-    Producto update(Long id, ProductoCreateForm form);
+    Producto update(Long id, ProductoCreateForm form, MultipartFile imagenFile);
 
     void delete(Long id);
 }

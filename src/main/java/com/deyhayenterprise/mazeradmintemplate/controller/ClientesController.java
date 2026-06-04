@@ -36,6 +36,7 @@ public class ClientesController {
         model.addAttribute("pageHeading", "Nuevo Cliente");
         model.addAttribute("pageSubtitle", "Registrar un nuevo cliente");
         model.addAttribute("categorias", clienteCategoriaService.findAllCategoryNames());
+        model.addAttribute("paises", getPaises());
         if (!model.containsAttribute("clienteForm")) {
             model.addAttribute("clienteForm", new ClienteCreateForm());
         }
@@ -51,6 +52,7 @@ public class ClientesController {
             model.addAttribute("pageHeading", "Nuevo Cliente");
             model.addAttribute("pageSubtitle", "Registrar un nuevo cliente");
             model.addAttribute("categorias", clienteCategoriaService.findAllCategoryNames());
+            model.addAttribute("paises", getPaises());
             return "clientes/nuevo";
         }
 
@@ -62,6 +64,7 @@ public class ClientesController {
             model.addAttribute("pageHeading", "Nuevo Cliente");
             model.addAttribute("pageSubtitle", "Registrar un nuevo cliente");
             model.addAttribute("categorias", clienteCategoriaService.findAllCategoryNames());
+            model.addAttribute("paises", getPaises());
             model.addAttribute("errorMessage", ex.getMessage());
             return "clientes/nuevo";
         }
@@ -182,6 +185,7 @@ public class ClientesController {
             model.addAttribute("pageHeading", "Editar Cliente");
             model.addAttribute("pageSubtitle", "Actualizar datos del cliente");
             model.addAttribute("categorias", clienteCategoriaService.findAllCategoryNames());
+            model.addAttribute("paises", getPaises());
             model.addAttribute("clienteId", id);
             if (!model.containsAttribute("clienteForm")) {
                 ClienteCreateForm form = new ClienteCreateForm();
@@ -191,6 +195,15 @@ public class ClientesController {
                 form.setTelefono(cliente.getTelefono());
                 form.setCategoria(cliente.getCategoria());
                 form.setDireccion(cliente.getDireccion());
+                form.setLimiteCredito(cliente.getLimiteCredito());
+                form.setAgente(cliente.getAgente());
+                form.setDiasCredito(cliente.getDiasCredito());
+                form.setNit(cliente.getNit());
+                form.setNrc(cliente.getNrc());
+                form.setActividadEconomica(cliente.getActividadEconomica());
+                form.setPais(cliente.getPais());
+                form.setDepartamento(cliente.getDepartamento());
+                form.setMunicipio(cliente.getMunicipio());
                 model.addAttribute("clienteForm", form);
             }
             return "clientes/editar";
@@ -210,6 +223,7 @@ public class ClientesController {
             model.addAttribute("pageHeading", "Editar Cliente");
             model.addAttribute("pageSubtitle", "Actualizar datos del cliente");
             model.addAttribute("categorias", clienteCategoriaService.findAllCategoryNames());
+            model.addAttribute("paises", getPaises());
             model.addAttribute("clienteId", id);
             return "clientes/editar";
         }
@@ -222,6 +236,7 @@ public class ClientesController {
             model.addAttribute("pageHeading", "Editar Cliente");
             model.addAttribute("pageSubtitle", "Actualizar datos del cliente");
             model.addAttribute("categorias", clienteCategoriaService.findAllCategoryNames());
+            model.addAttribute("paises", getPaises());
             model.addAttribute("clienteId", id);
             model.addAttribute("errorMessage", ex.getMessage());
             return "clientes/editar";
@@ -237,5 +252,9 @@ public class ClientesController {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }
         return "redirect:/clientes/listar";
+    }
+
+    private List<String> getPaises() {
+        return List.of("El Salvador", "Guatemala", "Honduras", "Nicaragua", "Costa Rica", "Panama");
     }
 }

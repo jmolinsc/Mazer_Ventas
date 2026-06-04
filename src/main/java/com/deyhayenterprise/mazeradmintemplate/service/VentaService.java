@@ -11,7 +11,5 @@ public interface VentaService {
 
     Venta findById(Long id);
 
-    Venta create(VentaCreateForm form,String accion);
-
-    Venta update(Long id, VentaCreateForm form, String accion);
+    Venta executeTransaction(Long id, VentaCreateForm form, String accion, String comportamiento);
 }

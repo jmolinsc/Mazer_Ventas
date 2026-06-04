@@ -8,62 +8,45 @@
 )}">
 <section class="section">
     <div class="card">
-        <div class="card-header">
-            <h4 class="card-title">Movimientos de Inventario</h4>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="card-title">Historial de Movimientos</h4>
+            <a th:href="@{/inventario/movimientos/nuevo}" class="btn btn-primary btn-sm">Nuevo Movimiento</a>
         </div>
         <div class="card-body">
+            <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
             <table class="table table-striped" id="table1">
                 <thead>
                     <tr>
+                        <th>Estatus</th>
+                        <th>ID</th>
                         <th>Fecha</th>
-                        <th>Producto</th>
-                        <th>Tipo</th>
-                        <th>Cantidad</th>
-                        <th>Motivo</th>
+                        <th>Movimiento</th>
+                        <th>Comportamiento</th>
+                        <th>Total Cantidad</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>2025-03-08</td>
-                        <td>Producto A</td>
-                        <td><span class="badge bg-success">Entrada</span></td>
-                        <td>50</td>
-                        <td>Compra</td>
-                    </tr>
-                    <tr>
-                        <td>2025-03-07</td>
-                        <td>Producto B</td>
-                        <td><span class="badge bg-danger">Salida</span></td>
-                        <td>20</td>
-                        <td>Venta</td>
-                    </tr>
-                    <tr>
-                        <td>2025-03-06</td>
-                        <td>Producto C</td>
-                        <td><span class="badge bg-success">Entrada</span></td>
-                        <td>100</td>
-                        <td>Compra</td>
-                    </tr>
-                    <tr>
-                        <td>2025-03-05</td>
-                        <td>Producto A</td>
-                        <td><span class="badge bg-danger">Salida</span></td>
-                        <td>15</td>
-                        <td>Venta</td>
-                    </tr>
-                    <tr>
-                        <td>2025-03-04</td>
-                        <td>Producto D</td>
-                        <td><span class="badge bg-success">Entrada</span></td>
-                        <td>75</td>
-                        <td>Devolución</td>
-                    </tr>
-                    <tr>
-                        <td>2025-03-03</td>
-                        <td>Producto E</td>
-                        <td><span class="badge bg-danger">Salida</span></td>
-                        <td>30</td>
-                        <td>Venta</td>
+                    <tr th:each="inv : ${inventarios}">
+                        <td>
+                            <span class="badge"
+                                  th:with="estatusValue=${inv.estatus != null ? inv.estatus : inv.estado}"
+                                  th:classappend="${estatusValue == 'CONCLUIDO'} ? ' bg-success' : (${estatusValue == 'PENDIENTE'} ? ' bg-warning text-dark' : (${estatusValue == 'SINAFECTAR'} ? ' bg-light text-dark border' : (${estatusValue == 'CANCELADO'} ? ' bg-danger' : ' bg-secondary')))">
+                                <i class="bi bi-check-circle-fill me-1" th:if="${estatusValue == 'CONCLUIDO'}"></i>
+                                <i class="bi bi-lightning-charge-fill me-1" th:if="${estatusValue == 'PENDIENTE'}"></i>
+                                <i class="bi bi-x-circle-fill me-1" th:if="${estatusValue == 'CANCELADO'}"></i>
+                                <span th:text="${estatusValue}">SINAFECTAR</span>
+                            </span>
+                        </td>
+                        <td th:text="${inv.id}">1</td>
+                        <td th:text="${inv.fecha}">2026-03-24</td>
+                        <td th:text="${inv.mov}">ENTRADA COMPRA</td>
+                        <td th:text="${inv.comportamiento}">ENTRADA</td>
+                        <td th:text="${inv.totalCantidad}">0</td>
+                        <td>
+                            <a class="btn btn-warning btn-sm" th:href="@{'/inventario/movimientos/editar/' + ${inv.id}}">Editar</a>
+                        </td>
                     </tr>
                 </tbody>
             </table>

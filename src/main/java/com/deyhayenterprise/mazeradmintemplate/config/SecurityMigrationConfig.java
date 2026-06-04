@@ -3,6 +3,7 @@ package com.deyhayenterprise.mazeradmintemplate.config;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Locale;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -69,6 +70,8 @@ public class SecurityMigrationConfig {
                 new OptionDef("FABRICANTES_EDITAR",  "Editar Fabricante",  "/fabricantes/editar",  "Editar datos del fabricante", 3, "FABRICANTES"),
                 new OptionDef("FABRICANTES_ELIMINAR", "Eliminar Fabricante", "/fabricantes/eliminar", "Eliminar fabricante",        4, "FABRICANTES"),
                 new OptionDef("VENTAS_EDITAR",       "Editar Venta",       "/ventas/editar",       "Editar venta",               4, "VENTAS"),
+                new OptionDef("VENTAS_AFECTAR",     "Afectar Venta",      "/ventas/afectar",      "Afectar venta",              5, "VENTAS"),
+                new OptionDef("VENTAS_CANCELAR",    "Cancelar Venta",     "/ventas/cancelar",     "Cancelar venta",             6, "VENTAS"),
                 new OptionDef("CONFIG_MENUS",       "Menus",              "/config/menus",        "Administracion de menus",    4, "CONFIGURACION"),
                 new OptionDef("CONFIG_MOVIMIENTOS_MODULOS", "Modulo", "/config/movimientos/modulos", "Mantenimiento de módulos", 1, "MOVIMIENTOS"),
                 new OptionDef("CONFIG_MOVIMIENTOS_COMPORTAMIENTOS", "Comportamiento", "/config/movimientos/comportamientos", "Mantenimiento de comportamientos", 2, "MOVIMIENTOS"),
@@ -90,6 +93,15 @@ public class SecurityMigrationConfig {
             existing.put(def.codigo(), option);
         }
 
+        // Genera permisos de accion por modulo para exponerlos en Configuracion > Permisos.
+        for (AppMenu menu : menus.values()) {
+            if ("DASHBOARD".equalsIgnoreCase(menu.getCodigo())) {
+                continue;
+            }
+            ensureActionOption(menu, "AFECTAR", existing);
+            ensureActionOption(menu, "CANCELAR", existing);
+        }
+
         // Usar findAllWithOptions para cargar roles con fetch de options dentro de la misma sesion
         Map<String, Role> roles = roleRepository.findAllWithOptions()
                 .stream()
@@ -98,16 +110,18 @@ public class SecurityMigrationConfig {
         assignOptions(roles.get("ADMIN"),
                 List.of(
                         "CLIENTES_EDITAR", "CLIENTES_ELIMINAR", "PRODUCTOS_NUEVO", "PRODUCTOS_LISTAR", "PRODUCTOS_CATEGORIAS", "PRODUCTOS_EDITAR", "PRODUCTOS_ELIMINAR",
-                        "FABRICANTES_EDITAR", "FABRICANTES_ELIMINAR", "VENTAS_EDITAR", "CONFIG_MENUS",
-                        "CONFIG_MOVIMIENTOS_MODULOS", "CONFIG_MOVIMIENTOS_COMPORTAMIENTOS", "CONFIG_MOVIMIENTOS_MOVTIPOS"),
+                        "FABRICANTES_EDITAR", "FABRICANTES_ELIMINAR", "VENTAS_EDITAR", "VENTAS_AFECTAR", "VENTAS_CANCELAR", "CONFIG_MENUS",
+                        "CONFIG_MOVIMIENTOS_MODULOS", "CONFIG_MOVIMIENTOS_COMPORTAMIENTOS", "CONFIG_MOVIMIENTOS_MOVTIPOS",
+                        "INVENTARIO_AFECTAR", "INVENTARIO_CANCELAR"),
                 existing);
 
         assignOptions(roles.get("VENDEDOR"),
-                List.of("PRODUCTOS_LISTAR", "VENTAS_EDITAR"),
+                List.of("PRODUCTOS_LISTAR", "VENTAS_EDITAR", "VENTAS_AFECTAR", "VENTAS_CANCELAR"),
                 existing);
 
         assignOptions(roles.get("BODEGA"),
-                List.of("PRODUCTOS_NUEVO", "PRODUCTOS_LISTAR", "PRODUCTOS_CATEGORIAS", "PRODUCTOS_EDITAR", "PRODUCTOS_ELIMINAR"),
+                List.of("PRODUCTOS_NUEVO", "PRODUCTOS_LISTAR", "PRODUCTOS_CATEGORIAS", "PRODUCTOS_EDITAR", "PRODUCTOS_ELIMINAR",
+                        "INVENTARIO_AFECTAR", "INVENTARIO_CANCELAR"),
                 existing);
     }
 
@@ -125,5 +139,30 @@ public class SecurityMigrationConfig {
         if (changed) {
             roleRepository.save(role);
         }
+    }
+
+    private void ensureActionOption(AppMenu menu, String actionSuffix, Map<String, MenuOption> existing) {
+        String menuCode = menu.getCodigo().toUpperCase(Locale.ROOT);
+        String codigo = menuCode + "_" + actionSuffix;
+        if (existing.containsKey(codigo)) {
+            return;
+        }
+
+        String urlBase = "/" + menuCode.toLowerCase(Locale.ROOT).replace('_', '-');
+        String actionPath = actionSuffix.toLowerCase(Locale.ROOT);
+        String nombre = capitalize(actionPath) + " " + menu.getNombre();
+        String descripcion = capitalize(actionPath) + " en modulo " + menu.getNombre();
+
+        MenuOption option = new MenuOption(codigo, nombre, urlBase + "/" + actionPath, descripcion, 900, menu);
+        menuOptionRepository.save(option);
+        existing.put(codigo, option);
+        log.info("Migracion: opcion {} ({}) creada.", codigo, option.getUrl());
+    }
+
+    private String capitalize(String value) {
+        if (value == null || value.isBlank()) {
+            return value;
+        }
+        return value.substring(0, 1).toUpperCase(Locale.ROOT) + value.substring(1);
     }
 }

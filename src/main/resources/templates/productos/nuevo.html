@@ -13,77 +13,198 @@
         </div>
         <div class="card-body">
             <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
-            <form method="post" th:action="@{/productos/nuevo}" th:object="${productoForm}">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="nombre" class="form-label">Nombre del Producto</label>
-                            <input type="text" class="form-control" id="nombre" th:field="*{nombre}">
-                            <small class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></small>
+            <form method="post" th:action="@{/productos/nuevo}" th:object="${productoForm}" enctype="multipart/form-data">
+                <div class="btn-toolbar mb-3" role="toolbar" aria-label="Acciones de producto">
+                    <div class="btn-group" role="group">
+                        <button type="submit" class="btn btn-success" name="accion" value="guardar">Guardar</button>
+                        <button type="reset" class="btn btn-warning">Limpiar</button>
+                        <button type="button" class="btn btn-info" onclick="window.print()">Imprimir</button>
+                        <a class="btn btn-danger" th:href="@{/productos/listar}">Cancelar</a>
+                    </div>
+                </div>
+
+                <ul class="nav nav-tabs mb-3" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link"
+                                type="button"
+                                data-bs-toggle="tab"
+                                data-bs-target="#tab-generales"
+                                th:classappend="${(!#fields.hasErrors('precio') and !#fields.hasErrors('costo') and !#fields.hasErrors('stock') and !#fields.hasErrors('stockMinimo') and !#fields.hasErrors('stockMaximo') and !#fields.hasErrors('unidad') and !#fields.hasErrors('ubicacion') and !#fields.hasErrors('descripcion')) or #fields.hasErrors('nombre') or #fields.hasErrors('codigo') or #fields.hasErrors('categoria') or #fields.hasErrors('fabricanteId') ? ' active' : ''}">
+                            Datos generales
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link"
+                                type="button"
+                                data-bs-toggle="tab"
+                                data-bs-target="#tab-precios"
+                                th:classappend="${(#fields.hasErrors('precio') or #fields.hasErrors('costo')) and !#fields.hasErrors('nombre') and !#fields.hasErrors('codigo') and !#fields.hasErrors('categoria') and !#fields.hasErrors('fabricanteId') ? ' active' : ''}">
+                            Precios
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link"
+                                type="button"
+                                data-bs-toggle="tab"
+                                data-bs-target="#tab-planeacion"
+                                th:classappend="${(#fields.hasErrors('stock') or #fields.hasErrors('stockMinimo') or #fields.hasErrors('stockMaximo') or #fields.hasErrors('unidad') or #fields.hasErrors('ubicacion')) and !#fields.hasErrors('nombre') and !#fields.hasErrors('codigo') and !#fields.hasErrors('categoria') and !#fields.hasErrors('fabricanteId') and !#fields.hasErrors('precio') and !#fields.hasErrors('costo') ? ' active' : ''}">
+                            Planeacion
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link"
+                                type="button"
+                                data-bs-toggle="tab"
+                                data-bs-target="#tab-otros"
+                                th:classappend="${#fields.hasErrors('descripcion') ? ' active' : ''}">
+                            Otros datos
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content border border-top-0 rounded-bottom p-3">
+                    <div id="tab-generales"
+                         class="tab-pane fade"
+                         th:classappend="${(!#fields.hasErrors('precio') and !#fields.hasErrors('costo') and !#fields.hasErrors('stock') and !#fields.hasErrors('stockMinimo') and !#fields.hasErrors('stockMaximo') and !#fields.hasErrors('unidad') and !#fields.hasErrors('ubicacion') and !#fields.hasErrors('descripcion')) or #fields.hasErrors('nombre') or #fields.hasErrors('codigo') or #fields.hasErrors('categoria') or #fields.hasErrors('fabricanteId') ? ' show active' : ''}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="nombre" class="form-label">Nombre del Producto</label>
+                                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="codigo" class="form-label">Codigo</label>
+                                    <input type="text" class="form-control" id="codigo" th:field="*{codigo}">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('codigo')}" th:errors="*{codigo}"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="categoria" class="form-label">Categoria</label>
+                                    <select class="form-select" id="categoria" th:field="*{categoria}">
+                                        <option value="">Seleccionar categoria</option>
+                                        <option th:each="categoria : ${categorias}" th:value="${categoria}" th:text="${categoria}"></option>
+                                    </select>
+                                    <small class="text-danger" th:if="${#fields.hasErrors('categoria')}" th:errors="*{categoria}"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="fabricanteId" class="form-label">Fabricante</label>
+                                    <select class="form-select" id="fabricanteId" th:field="*{fabricanteId}">
+                                        <option value="">Seleccionar fabricante</option>
+                                        <option th:each="fabricante : ${fabricantes}" th:value="${fabricante.id}" th:text="${fabricante.nombre}"></option>
+                                    </select>
+                                    <small class="text-danger" th:if="${#fields.hasErrors('fabricanteId')}" th:errors="*{fabricanteId}"></small>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="codigo" class="form-label">Código</label>
-                            <input type="text" class="form-control" id="codigo" th:field="*{codigo}">
-                            <small class="text-danger" th:if="${#fields.hasErrors('codigo')}" th:errors="*{codigo}"></small>
+
+                    <div id="tab-precios"
+                         class="tab-pane fade"
+                         th:classappend="${(#fields.hasErrors('precio') or #fields.hasErrors('costo')) and !#fields.hasErrors('nombre') and !#fields.hasErrors('codigo') and !#fields.hasErrors('categoria') and !#fields.hasErrors('fabricanteId') ? ' show active' : ''}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="costo" class="form-label">Costo</label>
+                                    <input type="number" step="0.01" class="form-control" id="costo" th:field="*{costo}">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('costo')}" th:errors="*{costo}"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="precio" class="form-label">Precio de venta</label>
+                                    <input type="number" step="0.01" class="form-control" id="precio" th:field="*{precio}">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-planeacion"
+                         class="tab-pane fade"
+                         th:classappend="${(#fields.hasErrors('stock') or #fields.hasErrors('stockMinimo') or #fields.hasErrors('stockMaximo') or #fields.hasErrors('unidad') or #fields.hasErrors('ubicacion')) and !#fields.hasErrors('nombre') and !#fields.hasErrors('codigo') and !#fields.hasErrors('categoria') and !#fields.hasErrors('fabricanteId') and !#fields.hasErrors('precio') and !#fields.hasErrors('costo') ? ' show active' : ''}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="unidad" class="form-label">Unidad</label>
+                                    <select class="form-select" id="unidad" th:field="*{unidad}">
+                                        <option value="">Seleccionar unidad</option>
+                                        <option th:each="unidad : ${unidades}" th:value="${unidad}" th:text="${unidad}"></option>
+                                    </select>
+                                    <small class="text-danger" th:if="${#fields.hasErrors('unidad')}" th:errors="*{unidad}"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="ubicacion" class="form-label">Ubicacion</label>
+                                    <input type="text" class="form-control" id="ubicacion" th:field="*{ubicacion}" placeholder="Ej: A-01-B">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('ubicacion')}" th:errors="*{ubicacion}"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="stock" class="form-label">Stock actual</label>
+                                    <input type="number" class="form-control" id="stock" th:field="*{stock}">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="stockMinimo" class="form-label">Stock minimo</label>
+                                    <input type="number" class="form-control" id="stockMinimo" th:field="*{stockMinimo}">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('stockMinimo')}" th:errors="*{stockMinimo}"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="stockMaximo" class="form-label">Stock maximo</label>
+                                    <input type="number" class="form-control" id="stockMaximo" th:field="*{stockMaximo}">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('stockMaximo')}" th:errors="*{stockMaximo}"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-otros"
+                         class="tab-pane fade"
+                         th:classappend="${#fields.hasErrors('descripcion') ? ' show active' : ''}">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group mb-3">
+                                    <label for="descripcion" class="form-label">Descripcion</label>
+                                    <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="4" placeholder="Observaciones, notas tecnicas, etc."></textarea>
+                                    <small class="text-danger" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-2">
+                                    <label for="imagenFile" class="form-label">Imagen del producto</label>
+                                    <input type="file" class="form-control" id="imagenFile" name="imagenFile" accept="image/*" onchange="previewImagenProductoFile(event)">
+                                    <input type="hidden" th:field="*{imagenUrl}">
+                                </div>
+                                <div class="border rounded p-2 text-center">
+                                    <img id="previewImagenProducto" class="img-fluid rounded"
+                                         th:src="${#strings.isEmpty(productoForm.imagenUrl) ? '/assets/compiled/jpg/2.jpg' : productoForm.imagenUrl}"
+                                         alt="Previsualizacion de imagen">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="categoria" class="form-label">Categoría</label>
-                            <select class="form-select" id="categoria" th:field="*{categoria}">
-                                <option value="">Seleccionar categoría</option>
-                                <option th:each="categoria : ${categorias}" th:value="${categoria}" th:text="${categoria}"></option>
-                            </select>
-                            <small class="text-danger" th:if="${#fields.hasErrors('categoria')}" th:errors="*{categoria}"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="fabricanteId" class="form-label">Fabricante</label>
-                            <select class="form-select" id="fabricanteId" th:field="*{fabricanteId}">
-                                <option value="">Seleccionar fabricante</option>
-                                <option th:each="fabricante : ${fabricantes}" th:value="${fabricante.id}" th:text="${fabricante.nombre}"></option>
-                            </select>
-                            <small class="text-danger" th:if="${#fields.hasErrors('fabricanteId')}" th:errors="*{fabricanteId}"></small>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="unidad" class="form-label">Unidad</label>
-                            <select class="form-select" id="unidad" th:field="*{unidad}">
-                                <option value="">Seleccionar unidad</option>
-                                <option th:each="unidad : ${unidades}" th:value="${unidad}" th:text="${unidad}"></option>
-                            </select>
-                            <small class="text-danger" th:if="${#fields.hasErrors('unidad')}" th:errors="*{unidad}"></small>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="precio" class="form-label">Precio</label>
-                            <input type="number" step="0.01" class="form-control" id="precio" th:field="*{precio}">
-                            <small class="text-danger" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="stock" class="form-label">Stock</label>
-                            <input type="number" class="form-control" id="stock" th:field="*{stock}">
-                            <small class="text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></small>
-                        </div>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Guardar Producto</button>
             </form>
         </div>
     </div>
+
+    <script th:src="@{/js/producto-form.js}"></script>
 </section>
 </body>
 </html>

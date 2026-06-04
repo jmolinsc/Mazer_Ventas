@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.deyhayenterprise.mazeradmintemplate.service.FabricanteService;
@@ -50,6 +52,7 @@ public class ProductosController {
     @PostMapping("/nuevo")
     public String crearProducto(@Valid @ModelAttribute("productoForm") ProductoCreateForm productoForm,
                                 BindingResult bindingResult,
+                                @RequestParam(value = "imagenFile", required = false) MultipartFile imagenFile,
                                 RedirectAttributes redirectAttributes,
                                 Model model) {
         if (bindingResult.hasErrors()) {
@@ -62,7 +65,7 @@ public class ProductosController {
         }
 
         try {
-            productoService.create(productoForm);
+            productoService.create(productoForm, imagenFile);
             redirectAttributes.addFlashAttribute("successMessage", "Producto creado correctamente.");
             return "redirect:/productos/listar";
         } catch (IllegalArgumentException ex) {
@@ -304,7 +307,13 @@ public class ProductosController {
                 form.setPrecio(producto.getPrecio());
                 form.setStock(producto.getStock());
                 form.setUnidad(producto.getUnidad());
-                form.setFabricanteId(producto.getFabricante().getId());
+                form.setFabricanteId(producto.getFabricante() != null ? producto.getFabricante().getId() : null);
+                form.setCosto(producto.getCosto());
+                form.setStockMinimo(producto.getStockMinimo());
+                form.setStockMaximo(producto.getStockMaximo());
+                form.setUbicacion(producto.getUbicacion());
+                form.setDescripcion(producto.getDescripcion());
+                form.setImagenUrl(producto.getImagenUrl());
                 model.addAttribute("productoForm", form);
             }
             return "productos/editar";
@@ -318,6 +327,7 @@ public class ProductosController {
     public String actualizarProducto(@PathVariable Long id,
                                      @Valid @ModelAttribute("productoForm") ProductoCreateForm productoForm,
                                      BindingResult bindingResult,
+                                     @RequestParam(value = "imagenFile", required = false) MultipartFile imagenFile,
                                      RedirectAttributes redirectAttributes,
                                      Model model) {
         if (bindingResult.hasErrors()) {
@@ -331,7 +341,7 @@ public class ProductosController {
         }
 
         try {
-            productoService.update(id, productoForm);
+            productoService.update(id, productoForm, imagenFile);
             redirectAttributes.addFlashAttribute("successMessage", "Producto actualizado correctamente.");
             return "redirect:/productos/listar";
         } catch (IllegalArgumentException ex) {

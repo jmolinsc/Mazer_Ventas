@@ -23,47 +23,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>001</td>
-                        <td>Producto A</td>
-                        <td>150</td>
-                        <td>Unidad</td>
-                        <td><span class="badge bg-info">Disponible</span></td>
-                    </tr>
-                    <tr>
-                        <td>002</td>
-                        <td>Producto B</td>
-                        <td>75</td>
-                        <td>Kg</td>
-                        <td><span class="badge bg-info">Disponible</span></td>
-                    </tr>
-                    <tr>
-                        <td>003</td>
-                        <td>Producto C</td>
-                        <td>8</td>
-                        <td>Caja</td>
-                        <td><span class="badge bg-warning">Bajo Stock</span></td>
-                    </tr>
-                    <tr>
-                        <td>004</td>
-                        <td>Producto D</td>
-                        <td>220</td>
-                        <td>Unidad</td>
-                        <td><span class="badge bg-info">Disponible</span></td>
-                    </tr>
-                    <tr>
-                        <td>005</td>
-                        <td>Producto E</td>
-                        <td>0</td>
-                        <td>Litro</td>
-                        <td><span class="badge bg-danger">Agotado</span></td>
-                    </tr>
-                    <tr>
-                        <td>006</td>
-                        <td>Producto F</td>
-                        <td>95</td>
-                        <td>Unidad</td>
-                        <td><span class="badge bg-info">Disponible</span></td>
+                    <tr th:each="producto : ${productos}">
+                        <td th:text="${producto.codigo}">001</td>
+                        <td th:text="${producto.nombre}">Producto A</td>
+                        <td th:text="${producto.stock}">0</td>
+                        <td th:text="${producto.unidad}">Unidad</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${producto.stock == 0} ? ' bg-danger' : (${producto.stock < 10} ? ' bg-warning text-dark' : ' bg-info')"
+                                  th:text="${producto.stock == 0} ? 'Agotado' : (${producto.stock < 10} ? 'Bajo Stock' : 'Disponible')">Disponible</span>
+                        </td>
                     </tr>
                 </tbody>
             </table>

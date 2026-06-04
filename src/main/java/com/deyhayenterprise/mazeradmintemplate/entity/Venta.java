@@ -44,6 +44,18 @@ public class Venta {
     @Column(nullable = false, length = 20)
     private String estado;
 
+    @Column(length = 20)
+    private String estatus;
+
+    @Column(length = 100)
+    private String mov;
+
+    @Column(length = 50)
+    private String movid;
+
+    @Column(length = 100)
+    private String comportamiento;
+
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VentaDetalle> detalles = new ArrayList<>();
 
@@ -54,4 +66,12 @@ public class Venta {
 
     @Column(nullable = false)
     private Integer cantidad;
+
+    public String getEstatus() {
+        return estatus;
+    }
+
+    public void setEstatus(String estatus) {
+        this.estatus = estatus;
+    }
 }

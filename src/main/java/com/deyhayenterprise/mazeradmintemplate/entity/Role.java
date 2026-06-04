@@ -50,10 +50,17 @@ public class Role {
     )
     private Set<MenuOption> options = new LinkedHashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "rol_movtipo",
+            joinColumns = @JoinColumn(name = "rol_id"),
+            inverseJoinColumns = @JoinColumn(name = "movtipo_id")
+    )
+    private Set<Movtipo> movtipos = new LinkedHashSet<>();
+
     public Role(String codigo, String nombre, String descripcion) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.descripcion = descripcion;
     }
 }
-

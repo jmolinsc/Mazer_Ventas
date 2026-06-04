@@ -16,4 +16,6 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     @Override
     @EntityGraph(attributePaths = {"cliente", "detalles", "detalles.producto", "producto"})
     Optional<Venta> findById(Long id);
+
+    long countByMovIgnoreCase(String mov);
 }

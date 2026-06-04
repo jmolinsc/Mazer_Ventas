@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang='es'>
+<head>
+<meta charset='UTF-8'>
+<title>FACTURA - FACTURA-000008</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Arial, sans-serif; font-size: 12px; color: #222; padding: 30px; }
+  h1 { text-align:center; font-size:22px; margin-bottom:4px; }
+  h2 { text-align:center; font-size:14px; color:#435EBE; margin-bottom:8px; }
+  hr  { border:none; border-top:2px solid #435EBE; margin:10px 0; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:10px; }
+  .label { background:#EBEDF5; font-weight:bold; padding:4px 8px; border:1px solid #CCC; }
+  .value { padding:4px 8px; border:1px solid #CCC; }
+  h3 { font-size:11px; font-weight:bold; margin:10px 0 4px; }
+  table { width:100%; border-collapse:collapse; margin-bottom:10px; }
+  thead tr { background:#435EBE; color:#fff; }
+  th, td { padding:5px 8px; border:1px solid #D2D2D2; }
+  .center { text-align:center; }
+  .right  { text-align:right; }
+  .totales { margin-left:auto; width:260px; }
+  .totales td { border:1px solid #CCC; padding:4px 8px; }
+  .total-row { background:#DCE6FF; font-weight:bold; font-size:13px; }
+  .footer { margin-top:14px; text-align:center; font-size:10px; color:#666; font-style:italic; }
+  @media print {
+    body { padding:10px; }
+    .no-print { display:none; }
+    @page { size: A4; margin: 15mm; }
+  }
+  .btn-print { display:block; margin:0 auto 20px; padding:8px 24px; background:#435EBE;               color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
+</style>
+</head>
+<body>
+<button class='btn-print no-print' onclick='window.print()'>🖨 Imprimir / Guardar PDF</button>
+<h1>MAZER VENTAS</h1>
+<h2>FACTURA</h2>
+<hr/>
+<div class='grid'>
+  <div class='label'>Movimiento:</div><div class='value'>FACTURA</div>
+  <div class='label'>Folio:</div><div class='value'>FACTURA-000008</div>
+  <div class='label'>Fecha:</div><div class='value'>03/06/2026</div>
+  <div class='label'>Estado:</div><div class='value'>CONCLUIDO</div>
+</div>
+<h3>DATOS DEL CLIENTE</h3>
+<div class='grid'>
+  <div class='label'>Nombre:</div><div class='value'>Cliente B</div>
+  <div class='label'>NIT/Cédula:</div><div class='value'>N/A</div>
+  <div class='label'>Email:</div><div class='value'>clienteb@mazer.local</div>
+  <div class='label'>Teléfono:</div><div class='value'>555-5678</div>
+</div>
+<h3>DETALLE DE PRODUCTOS</h3>
+<table>
+  <thead><tr><th>#</th><th>Producto</th><th>Cantidad</th><th>Precio Unit.</th><th>Subtotal</th></tr></thead>
+  <tbody>
+<tr><td>1</td><td>MONITORES 3</td><td class='center'>1</td><td class='right'>$40.00</td><td class='right'>$40.00</td></tr>
+  </tbody>
+</table>
+<table class='totales'>
+  <tr><td class='right'>Subtotal:</td><td class='right'>$40.00</td></tr>
+  <tr><td class='right'>Impuestos (0%):</td><td class='right'>$0.00</td></tr>
+  <tr class='total-row'><td class='right'>TOTAL:</td><td class='right'>$40.00</td></tr>
+</table>
+<hr/>
+<div class='footer'>Generado: 03/06/2026 19:36 &nbsp;|&nbsp; Documento fiscal válido para propósitos tributarios.</div>
+</body>
+</html>

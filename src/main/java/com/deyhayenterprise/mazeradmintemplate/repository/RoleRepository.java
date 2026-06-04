@@ -13,8 +13,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
     Optional<Role> findByCodigoIgnoreCase(String codigo);
 
-    @EntityGraph(attributePaths = "options")
-    @Query("select distinct r from Role r left join fetch r.options order by r.nombre asc")
+    @EntityGraph(attributePaths = {"options", "movtipos"})
+    @Query("select distinct r from Role r left join fetch r.options left join fetch r.movtipos order by r.nombre asc")
     List<Role> findAllWithOptions();
 }
-

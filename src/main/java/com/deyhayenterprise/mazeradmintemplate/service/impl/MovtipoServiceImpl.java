@@ -29,6 +29,12 @@ public class MovtipoServiceImpl implements MovtipoService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Movtipo> findAllowedByUsernameAndModulo(String username, String modulo) {
+        return movtipoRepository.findAllowedByUsernameAndModulo(username, modulo);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Movtipo findActiveById(Long id) {
         return movtipoRepository.findByIdAndActivoTrue(id)
                 .orElseThrow(() -> new IllegalArgumentException("Movtipo no encontrado."));

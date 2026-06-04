@@ -7,6 +7,7 @@
     ~{::section}
 )}">
 <section class="section">
+    <link rel="stylesheet" th:href="@{/assets/extensions/choices.js/public/assets/styles/choices.min.css}">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="card-title mb-0">Administrar permisos por rol</h4>
@@ -74,10 +75,71 @@
                         </div>
                     </div>
                 </div>
+                <div class="card border shadow-none mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Permisos por acción y módulo</h5>
+                        <small class="text-muted">Configura Afectar/Cancelar por módulo (Ventas, Inventario, CxC, CxP, etc.)</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle">
+                                <thead>
+                                <tr>
+                                    <th>Módulo</th>
+                                    <th class="text-center">Afectar</th>
+                                    <th class="text-center">Cancelar</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="actionPerm : ${actionPermissionCatalog}">
+                                    <td>
+                                        <span class="fw-bold" th:text="${actionPerm.menuName()}">Ventas</span>
+                                        <small class="text-muted d-block" th:text="${actionPerm.menuCode()}">VENTAS</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"
+                                               th:if="${actionPerm.hasAfectarOption()}"
+                                               th:field="*{afectarOptionIds}"
+                                               th:value="${actionPerm.afectarOptionId()}" />
+                                        <span class="text-muted" th:if="${!actionPerm.hasAfectarOption()}">N/A</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"
+                                               th:if="${actionPerm.hasCancelarOption()}"
+                                               th:field="*{cancelarOptionIds}"
+                                               th:value="${actionPerm.cancelarOptionId()}" />
+                                        <span class="text-muted" th:if="${!actionPerm.hasCancelarOption()}">N/A</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card border shadow-none mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Movtipos permitidos por rol</h5>
+                        <small class="text-muted">Selecciona los tipos de movimiento permitidos para el rol</small>
+                    </div>
+                    <div class="card-body">
+                        <label for="movtipoIds" class="form-label">Movtipos</label>
+                        <select id="movtipoIds" class="form-select" th:field="*{movtipoIds}" multiple size="10" data-choices-movtipos="true">
+                            <option th:each="m : ${movtiposCatalog}" th:value="${m.id}"
+                                    th:text="${m.comportamiento.modulo.nombre + ' / ' + m.comportamiento.nombre + ' / ' + m.nombre}">
+                                VTA / FACTURA / FACTURA
+                            </option>
+                        </select>
+                        <small class="text-muted d-block mt-2">Usa Ctrl o Shift para seleccionar varios movtipos.</small>
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary">Guardar permisos</button>
             </form>
         </div>
     </div>
+
+    <!-- Scripts dentro de section para que sobrevivan al th:replace del layout -->
+    <script th:src="@{/assets/extensions/choices.js/public/assets/scripts/choices.min.js}"></script>
+    <script th:src="@{/js/permisos-movtipos.js}"></script>
 </section>
 </body>
 </html>

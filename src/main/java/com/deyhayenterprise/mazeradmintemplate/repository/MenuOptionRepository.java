@@ -42,6 +42,18 @@ public interface MenuOptionRepository extends JpaRepository<MenuOption, Long> {
     List<String> findAllowedUrlsByUsername(@Param("username") String username);
 
     @Query("""
+            select distinct o.codigo
+            from MenuOption o
+            join o.roles r
+            join r.users u
+            where lower(u.username) = lower(:username)
+              and u.activo = true
+              and r.activo = true
+              and o.activo = true
+            """)
+    List<String> findAllowedCodesByUsername(@Param("username") String username);
+
+    @Query("""
             select distinct o
             from MenuOption o
             join fetch o.menu m

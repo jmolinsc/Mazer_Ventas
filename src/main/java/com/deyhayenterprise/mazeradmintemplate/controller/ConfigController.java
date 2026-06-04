@@ -1,5 +1,7 @@
 package com.deyhayenterprise.mazeradmintemplate.controller;
 
+import java.util.LinkedHashSet;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -97,14 +99,20 @@ public class ConfigController {
         model.addAttribute("pageSubtitle", "Configurar permisos de usuarios por rol");
         model.addAttribute("roles", roleService.findAllRoles());
         model.addAttribute("permissionCatalog", roleService.buildPermissionCatalog());
+        model.addAttribute("actionPermissionCatalog", roleService.buildActionPermissionCatalog());
+        model.addAttribute("movtiposCatalog", movtipoService.findAllActive());
         model.addAttribute("selectedRoleId", selectedRoleId);
         model.addAttribute("selectedOptionIds", roleService.findAssignedOptionIds(selectedRoleId));
+        model.addAttribute("selectedMovtipoIds", roleService.findAssignedMovtipoIds(selectedRoleId));
         if (!model.containsAttribute("roleForm")) {
             model.addAttribute("roleForm", new RoleCreateForm());
         }
         if (!model.containsAttribute("permissionForm")) {
             RolePermissionUpdateForm form = new RolePermissionUpdateForm();
             form.setOptionIds(roleService.findAssignedOptionIds(selectedRoleId));
+            form.setAfectarOptionIds(roleService.findAssignedAfectarOptionIds(selectedRoleId));
+            form.setCancelarOptionIds(roleService.findAssignedCancelarOptionIds(selectedRoleId));
+            form.setMovtipoIds(roleService.findAssignedMovtipoIds(selectedRoleId));
             model.addAttribute("permissionForm", form);
         }
         return "config/permisos";
@@ -120,6 +128,8 @@ public class ConfigController {
             model.addAttribute("pageSubtitle", "Configurar permisos de usuarios por rol");
             model.addAttribute("roles", roleService.findAllRoles());
             model.addAttribute("permissionCatalog", roleService.buildPermissionCatalog());
+            model.addAttribute("actionPermissionCatalog", roleService.buildActionPermissionCatalog());
+            model.addAttribute("movtiposCatalog", movtipoService.findAllActive());
             model.addAttribute("selectedRoleId", resolveRoleId(null));
             model.addAttribute("selectedOptionIds", roleService.findAssignedOptionIds(resolveRoleId(null)));
             if (!model.containsAttribute("permissionForm")) {
@@ -144,7 +154,18 @@ public class ConfigController {
     public String actualizarPermisos(@PathVariable Long roleId,
                                      @ModelAttribute("permissionForm") RolePermissionUpdateForm permissionForm,
                                      RedirectAttributes redirectAttributes) {
-        roleService.updateRolePermissions(roleId, permissionForm.getOptionIds());
+        LinkedHashSet<Long> consolidatedOptions = new LinkedHashSet<>();
+        if (permissionForm.getOptionIds() != null) {
+            consolidatedOptions.addAll(permissionForm.getOptionIds());
+        }
+        if (permissionForm.getAfectarOptionIds() != null) {
+            consolidatedOptions.addAll(permissionForm.getAfectarOptionIds());
+        }
+        if (permissionForm.getCancelarOptionIds() != null) {
+            consolidatedOptions.addAll(permissionForm.getCancelarOptionIds());
+        }
+
+        roleService.updateRolePermissions(roleId, consolidatedOptions, permissionForm.getMovtipoIds());
         redirectAttributes.addFlashAttribute("successMessage", "Permisos actualizados correctamente.");
         return "redirect:/config/permisos?roleId=" + roleId;
     }

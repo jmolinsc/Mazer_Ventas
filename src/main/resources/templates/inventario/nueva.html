@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body th:replace="~{fragments/layout :: layout(
+    'Nuevo Movimiento de Inventario',
+    ${pageHeading},
+    ${pageSubtitle},
+    ~{::section}
+)}">
+<section class="section">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Movimiento de Inventario (Maestro-Detalle)</h4>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+            <div class="mb-3" th:with="status=${currentStatus != null ? currentStatus : 'SINAFECTAR'}">
+                <span class="badge"
+                      th:classappend="${status == 'CONCLUIDO'} ? ' bg-success' : (${status == 'PENDIENTE'} ? ' bg-warning text-dark' : (${status == 'SINAFECTAR'} ? ' bg-light text-dark border' : (${status == 'CANCELADO'} ? ' bg-danger' : ' bg-secondary')))">
+                    <i class="bi bi-check-circle-fill me-1" th:if="${status == 'CONCLUIDO'}"></i>
+                    <i class="bi bi-lightning-charge-fill me-1" th:if="${status == 'PENDIENTE'}"></i>
+                    <i class="bi bi-x-circle-fill me-1" th:if="${status == 'CANCELADO'}"></i>
+                    <span>Estatus:</span>
+                    <span class="ms-1" th:text="${status}">SINAFECTAR</span>
+                </span>
+            </div>
+            <form method="post" th:action="@{${formAction}}" th:object="${inventarioForm}">
+                <div class="btn-toolbar mb-3" role="toolbar" aria-label="Acciones de inventario">
+                    <div class="btn-group" role="group">
+                        <button type="submit" class="btn btn-warning" name="accion" value="afectar"
+                                th:disabled="${!canAfectarAction}">Afectar</button>
+                        <button type="submit" class="btn btn-danger" name="accion" value="cancelar"
+                                th:disabled="${!canCancelarAction}">Cancelar</button>
+                        <button type="submit" class="btn btn-success" name="accion" value="guardar"
+                                th:disabled="${!canGuardarAction}">Guardar</button>
+                        <button type="submit" class="btn btn-info" name="accion" value="imprimir"
+                                th:disabled="${!canImprimirAction}">Imprimir</button>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="fecha" class="form-label">Fecha</label>
+                        <input type="date" class="form-control" id="fecha" th:field="*{fecha}" th:readonly="${isReadOnly}">
+                        <small class="text-danger" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}"></small>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="mov" class="form-label">Tipo de Movimiento</label>
+                        <select class="form-select" id="mov" th:field="*{mov}" onchange="actualizarComportamientoInventario(this)" th:disabled="${isReadOnly}">
+                            <option value="">Seleccionar movimiento</option>
+                            <option th:each="m : ${movtipos}"
+                                    th:value="${m.nombre}"
+                                    th:text="${m.nombre}"
+                                    th:data-comportamiento="${m.comportamiento.nombre}">
+                            </option>
+                        </select>
+                        <input type="hidden" th:if="${isReadOnly}" th:field="*{mov}" />
+                        <small class="text-danger" th:if="${#fields.hasErrors('mov')}" th:errors="*{mov}"></small>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="movid" class="form-label">Consecutivo</label>
+                        <input type="text" class="form-control" id="movid" th:field="*{movid}" readonly
+                               placeholder="Se genera automaticamente al afectar y concluir">
+                        <small class="text-muted">Campo automatico: no editable por usuario.</small>
+                    </div>
+                </div>
+
+                <input type="hidden" id="comportamiento" th:field="*{comportamiento}" />
+                <input type="hidden" id="isReadOnlyFlag" th:value="${isReadOnly}" />
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0">Detalle del Movimiento</h5>
+                    <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modalProductos"
+                            th:disabled="${isReadOnly}">Agregar producto</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped" id="detalleTable">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Unidad</th>
+                                <th>Stock Actual</th>
+                                <th>Cantidad</th>
+                                <th>Accion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detalleBody"></tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="3" class="text-end">Total Cantidad</th>
+                                <th id="footerCantidad">0</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div id="detalleInputs">
+                    <th:block th:each="d, i : *{detalles}">
+                        <input type="hidden" th:name="${'detalles[' + i.index + '].productoId'}" th:value="${d.productoId}" />
+                        <input type="hidden" th:name="${'detalles[' + i.index + '].cantidad'}" th:value="${d.cantidad}" />
+                    </th:block>
+                </div>
+                <small class="text-danger" th:if="${#fields.hasErrors('detalles')}" th:errors="*{detalles}"></small>
+
+                <div class="mt-3">
+                    <button type="reset" class="btn btn-secondary" id="btnLimpiar" th:disabled="${isReadOnly}">Limpiar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalProductos" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Seleccionar productos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped" id="tableProductosModal">
+                        <thead>
+                            <tr>
+                                <th>Codigo</th>
+                                <th>Producto</th>
+                                <th>Stock</th>
+                                <th>Unidad</th>
+                                <th>Cantidad</th>
+                                <th>Accion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="producto : ${productos}">
+                                <td th:text="${producto.codigo}">P001</td>
+                                <td th:text="${producto.nombre}">Producto</td>
+                                <td th:text="${producto.stock}">0</td>
+                                <td th:text="${producto.unidad}">UND</td>
+                                <td style="width: 120px;">
+                                    <input type="number" min="1" class="form-control modal-cantidad" value="1" th:disabled="${isReadOnly}">
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-sm btn-agregar-producto"
+                                            th:disabled="${isReadOnly}"
+                                            th:attr="data-id=${producto.id},data-nombre=${producto.nombre},data-stock=${producto.stock},data-unidad=${producto.unidad}">
+                                        Agregar
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/inventario-form.js}"></script>
+    <script th:src="@{/js/inventario-comportamiento.js}"></script>
+</section>
+</body>
+</html>
+

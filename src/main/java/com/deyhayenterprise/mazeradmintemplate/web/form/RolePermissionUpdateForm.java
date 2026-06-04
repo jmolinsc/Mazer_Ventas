@@ -11,5 +11,8 @@ import lombok.Setter;
 public class RolePermissionUpdateForm {
 
     private Set<Long> optionIds = new LinkedHashSet<>();
+    private Set<Long> afectarOptionIds = new LinkedHashSet<>();
+    private Set<Long> cancelarOptionIds = new LinkedHashSet<>();
+    private Set<Long> movtipoIds = new LinkedHashSet<>();
 }
 

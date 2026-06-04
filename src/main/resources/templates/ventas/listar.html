@@ -17,25 +17,44 @@
             <table class="table table-striped" id="table1">
                 <thead>
                     <tr>
+                        <th>Estatus</th>
                         <th>ID Venta</th>
                         <th>Cliente</th>
                         <th>Items</th>
                         <th>Fecha</th>
                         <th>Total</th>
-                        <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="venta : ${ventas}">
+                        <td>
+                            <span class="badge"
+                                  th:with="estatusValue=${venta.estatus != null ? venta.estatus : venta.estado}"
+                                  th:classappend="${estatusValue == 'CONCLUIDO'} ? ' bg-success' : (${estatusValue == 'PENDIENTE'} ? ' bg-warning text-dark' : (${estatusValue == 'SINAFECTAR'} ? ' bg-light text-dark border' : (${estatusValue == 'CANCELADO'} ? ' bg-danger' : ' bg-secondary')))">
+                                <i class="bi bi-check-circle-fill me-1" th:if="${estatusValue == 'CONCLUIDO'}"></i>
+                                <i class="bi bi-lightning-charge-fill me-1" th:if="${estatusValue == 'PENDIENTE'}"></i>
+                                <i class="bi bi-x-circle-fill me-1" th:if="${estatusValue == 'CANCELADO'}"></i>
+                                <span th:text="${estatusValue}">SINAFECTAR</span>
+                            </span>
+                        </td>
                         <td th:text="${venta.id}">1</td>
                         <td th:text="${venta.cliente.nombre}">Cliente</td>
                         <td th:text="${venta.detalles != null ? venta.detalles.size() : 0}">1</td>
                         <td th:text="${venta.fecha}">2026-03-10</td>
                         <td th:text="${#numbers.formatDecimal(venta.total, 1, 'POINT', 2, 'COMMA')}">0.00</td>
-                        <td><span class="badge bg-success" th:text="${venta.estado}">COMPLETADA</span></td>
                         <td>
-                            <a class="btn btn-warning btn-sm" th:href="@{'/ventas/editar/' + ${venta.id}}">Editar</a>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a class="btn btn-warning" th:href="@{'/ventas/editar/' + ${venta.id}}" title="Editar venta">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+                                <a class="btn btn-info" th:href="@{'/reportes/venta/' + ${venta.id} + '/preview'}" title="Ver PDF" target="_blank">
+                                    <i class="bi bi-file-pdf"></i> Ver
+                                </a>
+                                <a class="btn btn-primary" th:href="@{'/reportes/venta/' + ${venta.id} + '/pdf'}" title="Descargar PDF" th:download="${venta.comportamiento + '-' + (venta.movid != null ? venta.movid : venta.id) + '.pdf'}">
+                                    <i class="bi bi-download"></i> PDF
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 </tbody>

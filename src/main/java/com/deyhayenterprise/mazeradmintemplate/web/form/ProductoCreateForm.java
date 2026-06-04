@@ -40,4 +40,22 @@ public class ProductoCreateForm {
     @NotBlank(message = "La unidad es obligatoria")
     @Size(max = 20, message = "La unidad no puede superar 20 caracteres")
     private String unidad;
+
+    @DecimalMin(value = "0.00", message = "El costo no puede ser negativo")
+    private BigDecimal costo;
+
+    @Min(value = 0, message = "El stock minimo no puede ser negativo")
+    private Integer stockMinimo;
+
+    @Min(value = 0, message = "El stock maximo no puede ser negativo")
+    private Integer stockMaximo;
+
+    @Size(max = 80, message = "La ubicacion no puede superar 80 caracteres")
+    private String ubicacion;
+
+    @Size(max = 500, message = "La descripcion no puede superar 500 caracteres")
+    private String descripcion;
+
+    @Size(max = 255, message = "La URL de imagen no puede superar 255 caracteres")
+    private String imagenUrl;
 }

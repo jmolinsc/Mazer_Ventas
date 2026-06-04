@@ -23,6 +23,15 @@ public class VentaCreateForm {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate fecha;
 
+    @Size(max = 100, message = "El movimiento no puede exceder 100 caracteres")
+    private String mov;
+
+    @Size(max = 50, message = "El movid no puede exceder 50 caracteres")
+    private String movid;
+
+    @Size(max = 100, message = "El comportamiento no puede exceder 100 caracteres")
+    private String comportamiento;
+
     @Valid
     @Size(min = 1, message = "Debe agregar al menos un producto al detalle")
     private List<VentaDetalleForm> detalles = new ArrayList<>();

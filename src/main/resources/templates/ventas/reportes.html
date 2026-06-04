@@ -1,55 +1,115 @@
 <!DOCTYPE html>
-
-</html>
-</body>
-</section>
-    </div>
-        </div>
-            <p class="text-muted">Gráfico de tendencia de ventas mensual</p>
-        <div class="card-body">
-        </div>
-            <h4 class="card-title">Gráfico de Ventas</h4>
-        <div class="card-header">
-    <div class="card mt-4">
-    </div>
-        </div>
-            </div>
-                </div>
-                    <p class="card-text">Producto A</p>
-                    <h5 class="card-title">Top Producto</h5>
-                <div class="card-body">
-            <div class="card">
-        <div class="col-md-3">
-        </div>
-            </div>
-                </div>
-                    <p class="card-text display-6">$344.44</p>
-                    <h5 class="card-title">Ticket Promedio</h5>
-                <div class="card-body">
-            <div class="card">
-        <div class="col-md-3">
-        </div>
-            </div>
-                </div>
-                    <p class="card-text display-6">45</p>
-                    <h5 class="card-title">Transacciones</h5>
-                <div class="card-body">
-            <div class="card">
-        <div class="col-md-3">
-        </div>
-            </div>
-                </div>
-                    <p class="card-text display-6">$15,500.00</p>
-                    <h5 class="card-title">Ventas del Mes</h5>
-                <div class="card-body">
-            <div class="card">
-        <div class="col-md-3">
-    <div class="row">
-<section class="section">
-)}">
-    ~{::section}
-    ${pageSubtitle},
-    ${pageHeading},
-    'Reportes de Ventas - Sistema de Ventas',
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body th:replace="~{fragments/layout :: layout(
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    'Reportes de Ventas',
+    ${pageHeading},
+    ${pageSubtitle},
+    ~{::section}
+)}">
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Reportes y Exportaciones</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Opciones de Exportación Global</h6>
+                            <p class="text-muted mb-3">Descarga todas las ventas en tus formatos preferidos:</p>
+                            <a href="/reportes/ventas/excel" class="btn btn-success btn-sm" title="Descargar Excel con todas las ventas">
+                                <i class="fas fa-file-excel"></i> Exportar Excel
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Generación Individual</h6>
+                            <p class="text-muted mb-3">Selecciona una venta del listado para generar su PDF:</p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover datatable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Comportamiento</th>
+                                    <th>Estado</th>
+                                    <th>Total</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="venta : ${ventas}">
+                                    <td th:text="${venta.id}"></td>
+                                    <td th:text="${#dates.format(venta.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                                    <td th:text="${venta.cliente.nombre}"></td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${
+                                                  venta.comportamiento == 'FACTURA' ? 'bg-primary' :
+                                                  venta.comportamiento == 'PEDIDO' ? 'bg-warning' :
+                                                  venta.comportamiento == 'DEVOLUCION' ? 'bg-danger' :
+                                                  'bg-secondary'
+                                              }"
+                                              th:text="${venta.comportamiento}"></span>
+                                    </td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${
+                                                  venta.estado == 'CONCLUIDO' ? 'bg-success' :
+                                                  venta.estado == 'PENDIENTE' ? 'bg-info' :
+                                                  venta.estado == 'CANCELADO' ? 'bg-danger' :
+                                                  'bg-secondary'
+                                              }"
+                                              th:text="${venta.estado}"></span>
+                                    </td>
+                                    <td th:text="'$' + ${#numbers.formatDecimal(venta.total, 0, 'COMMA', 2, 'POINT')}"></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a class="btn btn-info btn-sm"
+                                               th:href="@{/reportes/venta/{id}/preview(id=${venta.id})}"
+                                               title="Ver previsualización PDF en navegador"
+                                               target="_blank">
+                                                 <i class="fas fa-eye"></i> Ver
+                                            </a>
+                                            <a class="btn btn-primary btn-sm"
+                                               th:href="@{/reportes/venta/{id}/pdf(id=${venta.id})}"
+                                               th:download="${venta.comportamiento + '-' + (venta.movid != null ? venta.movid : venta.id) + '.pdf'}"
+                                               title="Descargar PDF">
+                                                 <i class="fas fa-download"></i> PDF
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instrucciones -->
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">📋 Instrucciones de Uso</h6>
+                    <ul class="list-unstyled ms-3">
+                        <li><i class="fas fa-check text-success"></i> <strong>Ver:</strong> Abre el PDF en el navegador para visualizar antes de descargar</li>
+                        <li><i class="fas fa-check text-success"></i> <strong>PDF:</strong> Descarga el comprobante completo listo para imprimir</li>
+                        <li><i class="fas fa-check text-success"></i> <strong>Excel:</strong> Exporta todas las ventas con sus datos principales</li>
+                        <li class="mt-2"><strong>Nota:</strong> Los PDFs se generan dinámicamente según el tipo de comportamiento (FACTURA, PEDIDO, etc.)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>
