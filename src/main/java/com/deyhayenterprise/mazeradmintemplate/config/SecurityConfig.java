@@ -30,6 +30,7 @@ public class SecurityConfig {
                         // Los reportes se sirven desde /reportes/** y deben permitir usuario autenticado
                         // sin depender del menu dinamico para evitar 403 al visualizar/descargar.
                         .requestMatchers("/reportes/**").authenticated()
+                        .requestMatchers("/api/v1/reportes/**").authenticated()
                         .anyRequest().access(databaseMenuAuthorizationManager))
                 .formLogin(form -> form
                         .loginPage("/auth-login")

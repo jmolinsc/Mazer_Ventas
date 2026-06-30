@@ -2,6 +2,9 @@ package com.deyhayenterprise.mazeradmintemplate.controller;
 
 import java.util.LinkedHashSet;
 
+import com.deyhayenterprise.mazeradmintemplate.entity.Empresa;
+import com.deyhayenterprise.mazeradmintemplate.service.*;
+import com.deyhayenterprise.mazeradmintemplate.web.form.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,21 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.deyhayenterprise.mazeradmintemplate.service.AppUserService;
-import com.deyhayenterprise.mazeradmintemplate.service.ComportamientoService;
-import com.deyhayenterprise.mazeradmintemplate.service.MenuAdminService;
-import com.deyhayenterprise.mazeradmintemplate.service.ModuloService;
-import com.deyhayenterprise.mazeradmintemplate.service.MovtipoService;
-import com.deyhayenterprise.mazeradmintemplate.service.RoleService;
-import com.deyhayenterprise.mazeradmintemplate.web.form.AppMenuForm;
-import com.deyhayenterprise.mazeradmintemplate.web.form.ComportamientoForm;
-import com.deyhayenterprise.mazeradmintemplate.web.form.MenuOptionForm;
-import com.deyhayenterprise.mazeradmintemplate.web.form.ModuloForm;
-import com.deyhayenterprise.mazeradmintemplate.web.form.MovtipoForm;
-import com.deyhayenterprise.mazeradmintemplate.web.form.RoleCreateForm;
-import com.deyhayenterprise.mazeradmintemplate.web.form.RolePermissionUpdateForm;
-import com.deyhayenterprise.mazeradmintemplate.web.form.UserCreateForm;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,12 +32,22 @@ public class ConfigController {
     private final ModuloService moduloService;
     private final ComportamientoService comportamientoService;
     private final MovtipoService movtipoService;
-
+    private final EmpresaService empresaService;
     @GetMapping("/empresa")
     public String empresa(Model model) {
+        Empresa empresa = empresaService.findFirstBy();
         log.info("Configuración de empresa");
         model.addAttribute("pageHeading", "Datos de la Empresa");
         model.addAttribute("pageSubtitle", "Información general de la empresa");
+        model.addAttribute("formAction", "/empresas/save");
+        // ✅ CORRECTO: Verificar null antes de acceder a getId()
+        Long id = (empresa != null) ? empresa.getId() : null;
+        model.addAttribute("id", id); // Puede ser null
+
+        // ✅ CORRECTO: Verificar null para crear el form
+        EmpresaForm empresaForm = (empresa != null) ? new EmpresaForm(empresa) : new EmpresaForm();
+        model.addAttribute("empresaForm", empresaForm);
+
         return "config/empresa";
     }
 

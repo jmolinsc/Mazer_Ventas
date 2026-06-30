@@ -3,195 +3,283 @@ package com.deyhayenterprise.mazeradmintemplate.service.impl;
 import com.deyhayenterprise.mazeradmintemplate.entity.Venta;
 import com.deyhayenterprise.mazeradmintemplate.entity.VentaDetalle;
 import com.deyhayenterprise.mazeradmintemplate.service.ReporteService;
+import com.deyhayenterprise.mazeradmintemplate.service.reporte.ReporteFacturacionService;
+import com.lowagie.text.*;
+import com.lowagie.text.Font;
+import com.lowagie.text.pdf.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.awt.*;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 /**
- * Implementación de ReporteService SIN dependencias externas.
- *
- * • generarPDF / generarPDFPorComportamiento → HTML print-ready (abre en browser, Ctrl+P = PDF)
- * • exportarVentasExcel                       → CSV compatible con Excel
+ * Implementación de ReporteService usando OpenPDF (com.github.librepdf:openpdf)
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ReporteServiceImpl implements ReporteService {
 
+    @Autowired
+    private ReporteFacturacionService reporteFacturacionService;
     private static final DateTimeFormatter FMT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter FMT_DATE_TIME = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    // ──────────────────────────────────────────────────────────────
-    // PDF (HTML para imprimir)
-    // ──────────────────────────────────────────────────────────────
+    private static final Color COLOR_HEADER = new Color(67, 97, 238);
+    private static final Color COLOR_HEADER_TEXT = Color.WHITE;
+    private static final Color COLOR_ROW_ALT = new Color(245, 247, 255);
+
+    // ─────────────────────────────────────────────
+    // PDF
+    // ─────────────────────────────────────────────
 
     @Override
     public ByteArrayOutputStream generarPDF(Venta venta) {
         if (venta == null) throw new IllegalArgumentException("Venta no puede ser nula");
         String comp = StringUtils.hasText(venta.getComportamiento())
-                ? venta.getComportamiento().trim().toUpperCase(Locale.ROOT)
-                : "FACTURA";
+                ? venta.getComportamiento().trim().toUpperCase(Locale.ROOT) : "FACTURA";
         return generarPDFPorComportamiento(venta, comp);
     }
 
     @Override
     public ByteArrayOutputStream generarPDFPorComportamiento(Venta venta, String comportamiento) {
-        String html = buildHtml(venta, comportamiento);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.writeBytes(html.getBytes(StandardCharsets.UTF_8));
-        log.info("Reporte HTML generado para venta {}", venta.getId());
+        Document doc = new Document(PageSize.A4, 36, 36, 50, 36);
+        try {
+            PdfWriter.getInstance(doc, baos);
+            doc.open();
+
+            Font fontTitulo  = new Font(Font.HELVETICA, 20, Font.BOLD, COLOR_HEADER);
+            Font fontSubtitulo = new Font(Font.HELVETICA, 13, Font.BOLD, COLOR_HEADER);
+            Font fontLabel   = new Font(Font.HELVETICA, 8, Font.BOLD);
+            Font fontValue   = new Font(Font.HELVETICA, 8, Font.NORMAL);
+            Font fontTableH  = new Font(Font.HELVETICA, 9, Font.BOLD, COLOR_HEADER_TEXT);
+            Font fontTableR  = new Font(Font.HELVETICA, 9, Font.NORMAL);
+            Font fontTotal   = new Font(Font.HELVETICA, 10, Font.BOLD);
+            Font fontNota    = new Font(Font.HELVETICA, 8, Font.ITALIC, Color.GRAY);
+
+            // ── Encabezado ──
+            Paragraph empresa = new Paragraph("MAZER VENTAS", fontTitulo);
+            empresa.setAlignment(Element.ALIGN_CENTER);
+            doc.add(empresa);
+
+            Paragraph tipo = new Paragraph(comportamiento, fontSubtitulo);
+            tipo.setAlignment(Element.ALIGN_CENTER);
+            tipo.setSpacingAfter(6);
+            doc.add(tipo);
+
+            // Línea separadora
+            doc.add(new Chunk(new com.lowagie.text.pdf.draw.LineSeparator(1.5f, 100, COLOR_HEADER, Element.ALIGN_CENTER, -2)));
+            doc.add(Chunk.NEWLINE);
+
+            // ── Datos del comprobante ──
+            PdfPTable infoTable = new PdfPTable(4);
+            infoTable.setWidthPercentage(100);
+            infoTable.setWidths(new float[]{2f, 3f, 2f, 3f});
+            infoTable.setSpacingAfter(8);
+
+            addInfoCell(infoTable, "Movimiento:", venta.getMov(), fontLabel, fontValue);
+            addInfoCell(infoTable, "Folio:", venta.getMovid() != null ? venta.getMovid() : "SIN AFECTAR", fontLabel, fontValue);
+            addInfoCell(infoTable, "Fecha:", venta.getFecha() != null ? venta.getFecha().format(FMT_DATE) : "N/A", fontLabel, fontValue);
+            addInfoCell(infoTable, "Estado:", nvl(venta.getEstado()), fontLabel, fontValue);
+            doc.add(infoTable);
+
+            // ── Datos del cliente ──
+            if (venta.getCliente() != null) {
+                PdfPTable cliTable = new PdfPTable(4);
+                cliTable.setWidthPercentage(100);
+                cliTable.setWidths(new float[]{2f, 3f, 2f, 3f});
+                cliTable.setSpacingAfter(10);
+
+                addInfoCell(cliTable, "Cliente:", nvl(venta.getCliente().getNombre()), fontLabel, fontValue);
+                addInfoCell(cliTable, "NIT:", nvl(venta.getCliente().getNit()), fontLabel, fontValue);
+                addInfoCell(cliTable, "Email:", nvl(venta.getCliente().getEmail()), fontLabel, fontValue);
+                addInfoCell(cliTable, "Teléfono:", nvl(venta.getCliente().getTelefono()), fontLabel, fontValue);
+                doc.add(cliTable);
+            }
+
+            // ── Tabla de detalle ──
+            PdfPTable detalle = new PdfPTable(5);
+            detalle.setWidthPercentage(100);
+            detalle.setWidths(new float[]{0.7f, 4f, 1.2f, 2f, 2f});
+            detalle.setSpacingAfter(8);
+
+            String[] headers = {"#", "Producto", "Cantidad", "Precio Unit.", "Subtotal"};
+            for (String h : headers) {
+                PdfPCell cell = new PdfPCell(new Phrase(h, fontTableH));
+                cell.setBackgroundColor(COLOR_HEADER);
+                cell.setPadding(5);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                cell.setBorderColor(Color.WHITE);
+                detalle.addCell(cell);
+            }
+
+            List<VentaDetalle> detalles = venta.getDetalles();
+            int idx = 1;
+            if (detalles != null) {
+                for (VentaDetalle d : detalles) {
+                    Color rowBg = (idx % 2 == 0) ? COLOR_ROW_ALT : Color.WHITE;
+                    addDetalleRow(detalle, idx,
+                            d.getProducto() != null ? d.getProducto().getNombre() : "N/A",
+                            d.getCantidad(),
+                            d.getPrecioUnitario(),
+                            d.getSubtotal(),
+                            fontTableR, rowBg);
+                    idx++;
+                }
+            }
+            doc.add(detalle);
+
+            // ── Totales ──
+            PdfPTable totales = new PdfPTable(2);
+            totales.setWidthPercentage(40);
+            totales.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            totales.setSpacingAfter(12);
+
+            addTotalRow(totales, "Subtotal:", fmt(venta.getTotal()), fontTotal);
+            addTotalRow(totales, "TOTAL:", fmt(venta.getTotal()), fontTotal);
+            doc.add(totales);
+
+            // ── Nota al pie ──
+            Paragraph nota = new Paragraph(notaFinal(comportamiento), fontNota);
+            nota.setAlignment(Element.ALIGN_CENTER);
+            nota.setSpacingBefore(10);
+            doc.add(nota);
+
+            doc.close();
+            log.info("PDF generado exitosamente para venta {}", venta.getId());
+        } catch (DocumentException e) {
+            log.error("Error al generar PDF para venta {}", venta.getId(), e);
+            throw new RuntimeException("Error al generar PDF: " + e.getMessage(), e);
+        }
         return baos;
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // Excel → CSV
-    // ──────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────
+    // Excel
+    // ─────────────────────────────────────────────
 
     @Override
     public ByteArrayOutputStream exportarVentasExcel(List<Venta> ventas) {
-        StringBuilder csv = new StringBuilder();
-        csv.append("ID,Fecha,Cliente,Comportamiento,Estado,Total,Cantidad\n");
-        for (Venta v : ventas) {
-            csv.append(nvl(v.getId())).append(",");
-            csv.append(v.getFecha() != null ? v.getFecha().format(FMT_DATE) : "").append(",");
-            csv.append(escape(v.getCliente() != null ? v.getCliente().getNombre() : "")).append(",");
-            csv.append(nvl(v.getComportamiento())).append(",");
-            csv.append(nvl(v.getEstado())).append(",");
-            csv.append(v.getTotal() != null ? v.getTotal().toPlainString() : "0").append(",");
-            csv.append(nvl(v.getCantidad())).append("\n");
-        }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.writeBytes(csv.toString().getBytes(StandardCharsets.UTF_8));
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Ventas");
+            String[] headers = {"ID", "Fecha", "Cliente", "Comportamiento", "Estado", "Total", "Cantidad"};
+
+            Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) {
+                headerRow.createCell(i).setCellValue(headers[i]);
+            }
+
+            int rowNum = 1;
+            for (Venta v : ventas) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(v.getId() != null ? v.getId() : 0);
+                row.createCell(1).setCellValue(v.getFecha() != null ? v.getFecha().format(FMT_DATE) : "");
+                row.createCell(2).setCellValue(v.getCliente() != null ? v.getCliente().getNombre() : "");
+                row.createCell(3).setCellValue(v.getComportamiento() != null ? v.getComportamiento() : "");
+                row.createCell(4).setCellValue(v.getEstado() != null ? v.getEstado() : "");
+                row.createCell(5).setCellValue(v.getTotal() != null ? v.getTotal().doubleValue() : 0);
+                row.createCell(6).setCellValue(v.getCantidad() != null ? v.getCantidad() : 0);
+            }
+            for (int i = 0; i < headers.length; i++) sheet.autoSizeColumn(i);
+            workbook.write(baos);
+            log.info("Excel generado con {} ventas", ventas.size());
+        } catch (IOException e) {
+            log.error("Error al generar Excel", e);
+            throw new RuntimeException("Error al generar Excel: " + e.getMessage(), e);
+        }
         return baos;
     }
 
     @Override
     public String obtenerNombreArchivo(Venta venta) {
-        if (venta == null) return "venta.html";
+        if (venta == null) return "venta.pdf";
         String comp = StringUtils.hasText(venta.getComportamiento())
-                ? venta.getComportamiento().trim().toUpperCase(Locale.ROOT)
-                : "VENTA";
+                ? venta.getComportamiento().trim().toUpperCase(Locale.ROOT) : "VENTA";
         String folio = venta.getMovid() != null
                 ? venta.getMovid()
                 : String.format("%06d", venta.getId() != null ? venta.getId() : 0);
-        return comp + "-" + folio + ".html";
+        return comp + "-" + folio + ".pdf";
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // Construcción del HTML
-    // ──────────────────────────────────────────────────────────────
+    @Override
+    public void finalizarVenta(Object venta) throws Exception {
 
-    private String buildHtml(Venta venta, String comp) {
-        String cliente      = venta.getCliente() != null ? esc(venta.getCliente().getNombre()) : "N/A";
-        String nit          = venta.getCliente() != null ? esc(venta.getCliente().getNit())     : "N/A";
-        String email        = venta.getCliente() != null ? esc(venta.getCliente().getEmail())   : "N/A";
-        String telefono     = venta.getCliente() != null ? esc(venta.getCliente().getTelefono()): "N/A";
-        String mov          = esc(nvl(venta.getMov()));
-        String folio        = venta.getMovid() != null ? esc(venta.getMovid()) : "SIN AFECTAR";
-        String fecha        = venta.getFecha()  != null ? venta.getFecha().format(FMT_DATE) : "N/A";
-        String estado       = esc(nvl(venta.getEstado()));
-        String totalStr     = fmt(venta.getTotal());
-        String timestamp    = LocalDateTime.now().format(FMT_DATE_TIME);
-        String nota         = notaFinal(comp);
-
-        // Filas de detalle
-        StringBuilder filas = new StringBuilder();
-        int idx = 1;
-        if (venta.getDetalles() != null) {
-            for (VentaDetalle d : venta.getDetalles()) {
-                String prod = d.getProducto() != null ? esc(d.getProducto().getNombre()) : "N/A";
-                filas.append("<tr>")
-                     .append("<td>").append(idx++).append("</td>")
-                     .append("<td>").append(prod).append("</td>")
-                     .append("<td class='center'>").append(d.getCantidad()).append("</td>")
-                     .append("<td class='right'>").append(fmt(d.getPrecioUnitario())).append("</td>")
-                     .append("<td class='right'>").append(fmt(d.getSubtotal())).append("</td>")
-                     .append("</tr>\n");
-            }
-        }
-
-        return "<!DOCTYPE html>\n<html lang='es'>\n<head>\n"
-            + "<meta charset='UTF-8'>\n"
-            + "<title>" + comp + " - " + folio + "</title>\n"
-            + "<style>\n"
-            + "  * { margin:0; padding:0; box-sizing:border-box; }\n"
-            + "  body { font-family: Arial, sans-serif; font-size: 12px; color: #222; padding: 30px; }\n"
-            + "  h1 { text-align:center; font-size:22px; margin-bottom:4px; }\n"
-            + "  h2 { text-align:center; font-size:14px; color:#435EBE; margin-bottom:8px; }\n"
-            + "  hr  { border:none; border-top:2px solid #435EBE; margin:10px 0; }\n"
-            + "  .grid { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:10px; }\n"
-            + "  .label { background:#EBEDF5; font-weight:bold; padding:4px 8px; border:1px solid #CCC; }\n"
-            + "  .value { padding:4px 8px; border:1px solid #CCC; }\n"
-            + "  h3 { font-size:11px; font-weight:bold; margin:10px 0 4px; }\n"
-            + "  table { width:100%; border-collapse:collapse; margin-bottom:10px; }\n"
-            + "  thead tr { background:#435EBE; color:#fff; }\n"
-            + "  th, td { padding:5px 8px; border:1px solid #D2D2D2; }\n"
-            + "  .center { text-align:center; }\n"
-            + "  .right  { text-align:right; }\n"
-            + "  .totales { margin-left:auto; width:260px; }\n"
-            + "  .totales td { border:1px solid #CCC; padding:4px 8px; }\n"
-            + "  .total-row { background:#DCE6FF; font-weight:bold; font-size:13px; }\n"
-            + "  .footer { margin-top:14px; text-align:center; font-size:10px; color:#666; font-style:italic; }\n"
-            + "  @media print {\n"
-            + "    body { padding:10px; }\n"
-            + "    .no-print { display:none; }\n"
-            + "    @page { size: A4; margin: 15mm; }\n"
-            + "  }\n"
-            + "  .btn-print { display:block; margin:0 auto 20px; padding:8px 24px; background:#435EBE;"
-            + "               color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:14px; }\n"
-            + "</style>\n</head>\n<body>\n"
-            + "<button class='btn-print no-print' onclick='window.print()'>🖨 Imprimir / Guardar PDF</button>\n"
-            + "<h1>MAZER VENTAS</h1>\n"
-            + "<h2>" + comp + "</h2>\n"
-            + "<hr/>\n"
-            + "<div class='grid'>\n"
-            + "  <div class='label'>Movimiento:</div><div class='value'>" + mov + "</div>\n"
-            + "  <div class='label'>Folio:</div><div class='value'>" + folio + "</div>\n"
-            + "  <div class='label'>Fecha:</div><div class='value'>" + fecha + "</div>\n"
-            + "  <div class='label'>Estado:</div><div class='value'>" + estado + "</div>\n"
-            + "</div>\n"
-            + "<h3>DATOS DEL CLIENTE</h3>\n"
-            + "<div class='grid'>\n"
-            + "  <div class='label'>Nombre:</div><div class='value'>" + cliente + "</div>\n"
-            + "  <div class='label'>NIT/Cédula:</div><div class='value'>" + nit + "</div>\n"
-            + "  <div class='label'>Email:</div><div class='value'>" + email + "</div>\n"
-            + "  <div class='label'>Teléfono:</div><div class='value'>" + telefono + "</div>\n"
-            + "</div>\n"
-            + "<h3>DETALLE DE PRODUCTOS</h3>\n"
-            + "<table>\n"
-            + "  <thead><tr><th>#</th><th>Producto</th><th>Cantidad</th><th>Precio Unit.</th><th>Subtotal</th></tr></thead>\n"
-            + "  <tbody>\n" + filas + "  </tbody>\n"
-            + "</table>\n"
-            + "<table class='totales'>\n"
-            + "  <tr><td class='right'>Subtotal:</td><td class='right'>" + totalStr + "</td></tr>\n"
-            + "  <tr><td class='right'>Impuestos (0%):</td><td class='right'>$0.00</td></tr>\n"
-            + "  <tr class='total-row'><td class='right'>TOTAL:</td><td class='right'>" + totalStr + "</td></tr>\n"
-            + "</table>\n"
-            + "<hr/>\n"
-            + "<div class='footer'>Generado: " + timestamp + " &nbsp;|&nbsp; " + nota + "</div>\n"
-            + "</body>\n</html>";
     }
 
-    // ──────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────
     // Helpers
-    // ──────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────
+
+    private void addInfoCell(PdfPTable table, String label, String value, Font fontLabel, Font fontValue) {
+        PdfPCell lCell = new PdfPCell(new Phrase(label, fontLabel));
+        lCell.setBackgroundColor(new Color(235, 237, 245));
+        lCell.setPadding(4);
+        lCell.setBorderColor(new Color(204, 204, 204));
+        table.addCell(lCell);
+
+        PdfPCell vCell = new PdfPCell(new Phrase(value != null ? value : "N/A", fontValue));
+        vCell.setPadding(4);
+        vCell.setBorderColor(new Color(204, 204, 204));
+        table.addCell(vCell);
+    }
+
+    private void addDetalleRow(PdfPTable table, int idx, String producto, Integer cantidad,
+                                BigDecimal precio, BigDecimal subtotal, Font font, Color bg) {
+        String[] vals = {
+            String.valueOf(idx), producto,
+            cantidad != null ? String.valueOf(cantidad) : "0",
+            fmt(precio), fmt(subtotal)
+        };
+        int[] align = {Element.ALIGN_CENTER, Element.ALIGN_LEFT, Element.ALIGN_CENTER,
+                       Element.ALIGN_RIGHT, Element.ALIGN_RIGHT};
+        for (int i = 0; i < vals.length; i++) {
+            PdfPCell c = new PdfPCell(new Phrase(vals[i], font));
+            c.setBackgroundColor(bg);
+            c.setPadding(4);
+            c.setHorizontalAlignment(align[i]);
+            c.setBorderColor(new Color(220, 220, 220));
+            table.addCell(c);
+        }
+    }
+
+    private void addTotalRow(PdfPTable table, String label, String value, Font font) {
+        PdfPCell lCell = new PdfPCell(new Phrase(label, font));
+        lCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        lCell.setPadding(4);
+        lCell.setBorder(com.lowagie.text.Rectangle.NO_BORDER);
+        table.addCell(lCell);
+
+        PdfPCell vCell = new PdfPCell(new Phrase(value, font));
+        vCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        vCell.setPadding(4);
+        vCell.setBorder(com.lowagie.text.Rectangle.NO_BORDER);
+        table.addCell(vCell);
+    }
 
     private String notaFinal(String comp) {
         return switch (comp) {
-            case "FACTURA"      -> "Documento fiscal válido para propósitos tributarios.";
-            case "PEDIDO"       -> "Orden de compra. Sujeta a confirmación y disponibilidad.";
-            case "DEVOLUCION"   -> "Comprobante de devolución. Aplica para cambios o reintegros.";
-            case "NOTA_CREDITO" -> "Nota de crédito válida para ajustes contables.";
-            default             -> "Documento generado por el sistema MAZER VENTAS.";
+            case "FACTURA"     -> "Documento fiscal válido para propósitos tributarios.";
+            case "PEDIDO"      -> "Orden de compra. Sujeta a confirmación y disponibilidad.";
+            case "DEVOLUCION"  -> "Comprobante de devolución. Aplica para cambios o reintegros.";
+            case "NOTA_CREDITO"-> "Nota de crédito válida para ajustes contables.";
+            default            -> "Documento generado por el sistema MAZER VENTAS.";
         };
     }
 
@@ -199,23 +287,40 @@ public class ReporteServiceImpl implements ReporteService {
         return v != null ? String.format("$%,.2f", v) : "$0.00";
     }
 
-    /** Escapa caracteres HTML para prevenir XSS. */
-    private String esc(String v) {
-        if (v == null) return "N/A";
-        return v.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-                .replace("\"", "&quot;").replace("'", "&#39;");
+    private String nvl(String v) {
+        return v != null ? v : "N/A";
     }
 
-    private String nvl(Object v) {
-        return v != null ? v.toString() : "";
+    public void finalizarVenta(Long ventaid) throws Exception {
+        // Tu lógica para guardar la venta
+        System.out.println("Venta guardada exitosamente");
+
+        // Generar factura automáticamente
+        byte[] facturaPDF = reporteFacturacionService.procesarFactura(ventaid);
+
+        // Guardar el PDF en el servidor
+        Path path = Paths.get("facturas/factura_" + System.currentTimeMillis() + ".pdf");
+        Files.createDirectories(path.getParent());
+        Files.write(path, facturaPDF);
+
+        System.out.println("Factura generada y guardada en: " + path.toString());
     }
 
-    /** Escapa valores para CSV. */
-    private String escape(String v) {
-        if (v == null) return "";
-        if (v.contains(",") || v.contains("\"") || v.contains("\n")) {
-            return "\"" + v.replace("\"", "\"\"") + "\"";
-        }
-        return v;
+    public void generarCreditoFiscal(Object venta) throws Exception {
+        byte[] creditoPDF = reporteFacturacionService.procesarCreditoFiscal(venta);
+
+        Path path = Paths.get("facturas/credito_fiscal_" + System.currentTimeMillis() + ".pdf");
+        Files.write(path, creditoPDF);
+
+        System.out.println("Crédito fiscal generado: " + path.toString());
+    }
+
+    public void generarNotaCredito(Object notaCredito) throws Exception {
+        byte[] notaPDF = reporteFacturacionService.procesarNotaCredito(notaCredito);
+
+        Path path = Paths.get("facturas/nota_credito_" + System.currentTimeMillis() + ".pdf");
+        Files.write(path, notaPDF);
+
+        System.out.println("Nota de crédito generada: " + path.toString());
     }
 }

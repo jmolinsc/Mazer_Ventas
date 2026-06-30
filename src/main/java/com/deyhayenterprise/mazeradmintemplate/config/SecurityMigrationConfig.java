@@ -75,7 +75,9 @@ public class SecurityMigrationConfig {
                 new OptionDef("CONFIG_MENUS",       "Menus",              "/config/menus",        "Administracion de menus",    4, "CONFIGURACION"),
                 new OptionDef("CONFIG_MOVIMIENTOS_MODULOS", "Modulo", "/config/movimientos/modulos", "Mantenimiento de módulos", 1, "MOVIMIENTOS"),
                 new OptionDef("CONFIG_MOVIMIENTOS_COMPORTAMIENTOS", "Comportamiento", "/config/movimientos/comportamientos", "Mantenimiento de comportamientos", 2, "MOVIMIENTOS"),
-                new OptionDef("CONFIG_MOVIMIENTOS_MOVTIPOS", "Movtipo", "/config/movimientos/movtipos", "Mantenimiento de tipos de movimiento", 3, "MOVIMIENTOS")
+                new OptionDef("CONFIG_MOVIMIENTOS_MOVTIPOS", "Movtipo", "/config/movimientos/movtipos", "Mantenimiento de tipos de movimiento", 3, "MOVIMIENTOS"),
+                new OptionDef("EMPRESAS_EDITAR",     "Editar Empresa",      "/config/empresa",       "Editar datos de la empresa",    1, "EMPRESAS"),
+                new OptionDef("EMPRESAS_CONFIG",     "Configurar",          "/config/empresa",       "Configuración de la empresa",   2, "EMPRESAS")
         );
 
         for (OptionDef def : toAdd) {
@@ -109,7 +111,8 @@ public class SecurityMigrationConfig {
 
         assignOptions(roles.get("ADMIN"),
                 List.of(
-                        "CLIENTES_EDITAR", "CLIENTES_ELIMINAR", "PRODUCTOS_NUEVO", "PRODUCTOS_LISTAR", "PRODUCTOS_CATEGORIAS", "PRODUCTOS_EDITAR", "PRODUCTOS_ELIMINAR",
+                        "EMPRESAS_EDITAR",
+                        "EMPRESAS_CONFIG","CLIENTES_EDITAR", "CLIENTES_ELIMINAR", "PRODUCTOS_NUEVO", "PRODUCTOS_LISTAR", "PRODUCTOS_CATEGORIAS", "PRODUCTOS_EDITAR", "PRODUCTOS_ELIMINAR",
                         "FABRICANTES_EDITAR", "FABRICANTES_ELIMINAR", "VENTAS_EDITAR", "VENTAS_AFECTAR", "VENTAS_CANCELAR", "CONFIG_MENUS",
                         "CONFIG_MOVIMIENTOS_MODULOS", "CONFIG_MOVIMIENTOS_COMPORTAMIENTOS", "CONFIG_MOVIMIENTOS_MOVTIPOS",
                         "INVENTARIO_AFECTAR", "INVENTARIO_CANCELAR"),

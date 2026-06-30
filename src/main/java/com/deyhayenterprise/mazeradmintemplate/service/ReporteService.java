@@ -37,5 +37,10 @@ public interface ReporteService {
      * @return Nombre sugerido del archivo (ej: "FACTURA-VTA-000001.pdf")
      */
     String obtenerNombreArchivo(Venta venta);
+
+
+    public void finalizarVenta(Object venta)throws Exception;
+    public void generarCreditoFiscal(Object venta)throws Exception;
+    public void generarNotaCredito(Object notaCredito)throws Exception;
 }
 

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="FacturaUTEC_Hardcoded" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenNoDataType="AllSectionsNoDetail" language="java">
+
+    <!-- Todo el diseño se traslada a la banda Title para garantizar su renderizado sin datos dinámicos -->
+    <title>
+        <band height="350" splitType="Stretch">
+            <!-- Encabezado Universidad -->
+            <staticText>
+                <reportElement mode="Opaque" x="0" y="0" width="555" height="30" backcolor="#003366" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="18" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[TECNOLÓGICA]]></text>
+            </staticText>
+
+            <!-- Título Factura -->
+            <staticText>
+                <reportElement x="0" y="35" width="555" height="25"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <text><![CDATA[DOCUMENTO TRIBUTARIO ELECTRÓNICO - FACTURA]]></text>
+            </staticText>
+
+            <!-- Códigos fijos -->
+            <staticText>
+                <reportElement x="0" y="65" width="150" height="15"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Código de Generación:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="150" y="65" width="405" height="15"/>
+                <text><![CDATA[184C4C1-8E1-3-45CA-989F-82E3B2097D9FC]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="0" y="82" width="150" height="15"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Número de Control:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="150" y="82" width="405" height="15"/>
+                <text><![CDATA[D1E-01-M001P004-00000000000032949]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="0" y="99" width="150" height="15"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Sello de Recepción:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="150" y="99" width="405" height="15"/>
+                <text><![CDATA[2023A88H6F1C3B3F4/5/3F/1C18A8454B3F1ACNPS]]></text>
+            </staticText>
+
+            <!-- Sección Emisor -->
+            <staticText>
+                <reportElement mode="Opaque" x="0" y="125" width="555" height="20" backcolor="#CCCCCC"/>
+                <textElement verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[  EMISOR]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="10" y="148" width="120" height="15"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Nombre:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="130" y="148" width="425" height="15"/>
+                <text><![CDATA[UNIVERSIDAD TECNOLÓGICA DE EL SALVADOR]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="10" y="165" width="120" height="15"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[NIT:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="130" y="165" width="200" height="15"/>
+                <text><![CDATA[06142005810012]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="340" y="165" width="60" height="15"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[NIF:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="400" y="165" width="155" height="15"/>
+                <text><![CDATA[74535]]></text>
+            </staticText>
+
+            <!-- Sección Receptor -->
+            <staticText>
+                <reportElement mode="Opaque" x="0" y="195" width="555" height="20" backcolor="#CCCCCC"/>
+                <textElement verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[  RECEPTOR]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="10" y="218" width="120" height="15"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Nombre:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="130" y="218" width="425" height="15"/>
+                <text><![CDATA[HENRY FRANCISCO MARTINEZ LOPEZ]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="10" y="235" width="120" height="15"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Documento:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="130" y="235" width="200" height="15"/>
+                <text><![CDATA[055/4566-3]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="10" y="252" width="120" height="15"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Dirección:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="130" y="252" width="425" height="15"/>
+                <text><![CDATA[RESIDENCIAL ALTA VISTA, POLIGONO 4, PASAJE 25 CASA #205]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="10" y="269" width="120" height="15"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Carnet:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="130" y="269" width="200" height="15"/>
+                <text><![CDATA[12-349-7-2021]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="340" y="269" width="60" height="15"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Ciclo:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="400" y="269" width="155" height="15"/>
+                <text><![CDATA[02-2023]]></text>
+            </staticText>
+
+            <!-- Línea Items -->
+            <staticText>
+                <reportElement mode="Opaque" x="0" y="300" width="555" height="20" backcolor="#003366" forecolor="#FFFFFF"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[  Detalle de la Transacción]]></text>
+            </staticText>
+
+            <!-- Encabezado Tabla -->
+            <staticText>
+                <reportElement mode="Opaque" x="0" y="325" width="555" height="18" backcolor="#DDDDDD"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[  No.       Cantidad       Código       Descripción]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- La banda de detalle queda vacía intencionalmente temporalmente -->
+    <detail>
+        <band height="0" splitType="Stretch"/>
+    </detail>
+
+</jasperReport>

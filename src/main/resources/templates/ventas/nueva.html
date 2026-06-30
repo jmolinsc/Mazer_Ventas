@@ -43,8 +43,10 @@
                                 th:disabled="${!canGuardarAction}">
                             <i class="bi bi-floppy me-1"></i>Guardar
                         </button>
-                        <button type="submit" class="btn btn-info" name="accion" value="imprimir"
-                                th:disabled="${!canImprimirAction}">
+                        <button type="button" class="btn btn-info" name="accion" value="imprimir"
+                                th:disabled="${!canImprimirAction}"
+                                th:data-url="${formActionImprimir}"
+                                onclick="imprimirVenta(this)">
                             <i class="bi bi-printer me-1"></i>Imprimir
                         </button>
                     </div>
@@ -180,7 +182,21 @@
             </div>
         </div>
     </div>
+    <script>
+        function imprimirVenta(button) {
+            // Obtener la URL del atributo data-url
+            const url = button.getAttribute('data-url');
 
+            // Validar que exista la URL
+            if (!url || url === '') {
+                alert('No hay una venta guardada para imprimir.');
+                return;
+            }
+
+            // Abrir la ventana de impresión
+            window.open(url, '_blank');
+        }
+    </script>
     <script th:src="@{/js/venta-form.js}"></script>
     <script th:src="@{/js/venta-comportamiento.js}"></script>
 </section>

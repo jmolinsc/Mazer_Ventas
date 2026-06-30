@@ -40,7 +40,7 @@
                 <textElement textAlignment="Center" verticalAlignment="Middle">
                     <font size="22" isBold="true"/>
                 </textElement>
-                <text><![CDATA[MAZER VENTAS]]></text>
+                <text><![CDATA[JM PRODUCCIONES]]></text>
             </staticText>
 
             <!-- Tipo de documento -->

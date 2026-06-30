@@ -138,6 +138,7 @@ public class VentasController {
             applyUiFlagsForEdit(model, venta, allowedCodes);
             model.addAttribute("ventaForm", form);
             model.addAttribute("formAction", "/ventas/editar/" + id);
+            model.addAttribute("formActionImprimir", "/reportes/venta/imprimir/" + id);
             model.addAttribute("isEdit", true);
             return "ventas/nueva";
         } catch (IllegalArgumentException ex) {
@@ -163,6 +164,8 @@ public class VentasController {
         model.addAttribute("ventas", ventaService.findAll());
         return "ventas/reportes";
     }
+
+
 
 
     private void loadCatalogs(Model model) {

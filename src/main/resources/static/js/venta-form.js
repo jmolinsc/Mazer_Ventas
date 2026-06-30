@@ -26,7 +26,20 @@
             stock: Number(btn.getAttribute("data-stock") || "0")
         };
     }
+ function imprimirVenta(button) {
+ debugger;
+        // Obtener la URL del atributo data-url
+        const url = button.getAttribute('data-url');
 
+        // Validar que exista la URL
+        if (!url || url === '') {
+            alert('No hay una venta guardada para imprimir.');
+            return;
+        }
+
+        // Abrir la ventana de impresión
+        window.open(url, '_blank');
+    }
     function bootstrapFromHiddenInputs() {
         const productInputs = detalleInputs.querySelectorAll('input[name$=".productoId"]');
         for (const pInput of productInputs) {
@@ -50,6 +63,7 @@
     }
 
     function render() {
+
         detalleBody.innerHTML = "";
         detalleInputs.innerHTML = "";
 
@@ -135,6 +149,11 @@
             render();
         });
     });
+
+
+
+    // Función para obtener la URL base con Thymeleaf
+    const thymeleafContext = /*[[@{/}]]*/ '';
 
     document.getElementById("btnLimpiar")?.addEventListener("click", function () {
         detalleMap.clear();

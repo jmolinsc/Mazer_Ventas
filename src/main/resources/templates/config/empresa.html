@@ -14,28 +14,53 @@
                     <h4 class="card-title mb-0">Información general</h4>
                 </div>
                 <div class="card-body">
-                    <form>
+                    <form method="post"
+                          th:action="@{${formAction}}"
+                          th:object="${empresaForm}">
                         <div class="mb-3">
+                            <!-- ✅ Campo oculto para el ID -->
+                            <input type="hidden" name="id" th:value="${id}" />
                             <label class="form-label">Razón social</label>
-                            <input type="text" class="form-control" value="Mazer Ventas S.A.">
+                            <input type="text" class="form-control" id="razonsocial" th:field="*{razonsocial}" placeholder="Ingrese la razón social de la empresa">
+                            <small class="text-danger" th:if="${#fields.hasErrors('razonsocial')}" th:errors="*{razonsocial}"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre Comercial</label>
+                            <input type="text" class="form-control" id="nombre" th:field="*{nombre}" placeholder="Ingrese el nombre de la empresa">
+                            <small class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></small>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">NIT / RUC</label>
-                                <input type="text" class="form-control" value="001-010101-0001">
+                                <input type="text" class="form-control" id="nit" th:field="*{nit}" placeholder="Ingrese el NIT de la empresa">
+                                <small class="text-danger" th:if="${#fields.hasErrors('nit')}" th:errors="*{nit}"></small>
                             </div>
                             <div class="col-md-6 mb-3">
+                                <label class="form-label">NRC</label>
+                                <input type="text" class="form-control" id="nrc" th:field="*{nrc}" placeholder="Ingrese el NRC de la empresa">
+                                <small class="text-danger" th:if="${#fields.hasErrors('nrc')}" th:errors="*{nrc}"></small>
+                            </div>
+
+                        </div>
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
                                 <label class="form-label">Teléfono</label>
-                                <input type="text" class="form-control" value="+503 2222-3333">
+                                <input type="tel" class="form-control" id="telefono" th:field="*{telefono}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Correo corporativo</label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}">
+                                <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Correo corporativo</label>
-                            <input type="email" class="form-control" value="admin@mazer.local">
-                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">Dirección</label>
-                            <textarea class="form-control" rows="3">Calle principal #123, Ciudad</textarea>
+                            <textarea class="form-control" rows="3"
+                                      th:field="*{direccion}"
+                                      placeholder="Ingrese la dirección de la empresa"></textarea>
+                            <small class="text-danger" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}"></small>
                         </div>
                         <button type="submit" class="btn btn-primary">Guardar cambios</button>
                     </form>
