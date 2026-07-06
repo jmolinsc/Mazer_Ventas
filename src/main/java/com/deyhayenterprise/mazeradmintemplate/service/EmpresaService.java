@@ -8,4 +8,6 @@ public interface EmpresaService {
 
     Empresa save(Empresa empresa);
     Empresa update(Long id, Empresa empresa);
+
+     void cargarEmpresa();
 }

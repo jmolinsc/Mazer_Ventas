@@ -27,4 +27,9 @@ public class EmpresaServiceImpl implements EmpresaService {
     public Empresa update(Long id, Empresa empresa) {
         return empresaRepository.save(empresa);
     }
+
+    @Override
+    public void cargarEmpresa() {
+
+    }
 }
