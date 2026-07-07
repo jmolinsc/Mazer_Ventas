@@ -32,5 +32,7 @@ public class MenuOptionForm {
 
     @NotNull(message = "Debe seleccionar un menú")
     private Long menuId;
+
+    private Boolean mostrarmenu;
 }
 

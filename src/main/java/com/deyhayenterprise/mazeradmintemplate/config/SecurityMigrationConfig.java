@@ -47,7 +47,7 @@ public class SecurityMigrationConfig {
                 .collect(LinkedHashMap::new, (m, menu) -> m.put(menu.getCodigo(), menu), Map::putAll);
 
         if (!menus.containsKey("MOVIMIENTOS")) {
-            AppMenu movimientos = new AppMenu("MOVIMIENTOS", "Movimientos", "Configuración", "bi bi-file-earmark-text", 9);
+            AppMenu movimientos = new AppMenu("MOVIMIENTOS", "Movimientos", "Configuración", "bi bi-file-earmark-text", 9, true);
             appMenuRepository.save(movimientos);
             menus.put(movimientos.getCodigo(), movimientos);
             log.info("Migracion: menu MOVIMIENTOS creado.");
@@ -89,7 +89,7 @@ public class SecurityMigrationConfig {
                 log.warn("Migracion: menu {} no encontrado, omitiendo opcion {}", def.menuCodigo(), def.codigo());
                 continue;
             }
-            MenuOption option = new MenuOption(def.codigo(), def.nombre(), def.url(), def.descripcion(), def.orden(), menu);
+            MenuOption option = new MenuOption(def.codigo(), def.nombre(), def.url(), def.descripcion(), def.orden(), menu, false);
             menuOptionRepository.save(option);
             log.info("Migracion: opcion {} ({}) creada.", def.codigo(), def.url());
             existing.put(def.codigo(), option);
@@ -156,7 +156,7 @@ public class SecurityMigrationConfig {
         String nombre = capitalize(actionPath) + " " + menu.getNombre();
         String descripcion = capitalize(actionPath) + " en modulo " + menu.getNombre();
 
-        MenuOption option = new MenuOption(codigo, nombre, urlBase + "/" + actionPath, descripcion, 900, menu);
+        MenuOption option = new MenuOption(codigo, nombre, urlBase + "/" + actionPath, descripcion, 900, menu,false);
         menuOptionRepository.save(option);
         existing.put(codigo, option);
         log.info("Migracion: opcion {} ({}) creada.", codigo, option.getUrl());

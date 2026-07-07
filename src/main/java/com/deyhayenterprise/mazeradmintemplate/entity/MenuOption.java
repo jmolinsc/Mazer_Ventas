@@ -53,13 +53,18 @@ public class MenuOption {
     @ManyToMany(mappedBy = "options")
     private Set<Role> roles = new LinkedHashSet<>();
 
-    public MenuOption(String codigo, String nombre, String url, String descripcion, Integer ordenVisual, AppMenu menu) {
+    // 🔥 CAMBIO IMPORTANTE: De primitive a Wrapper
+    @Column(columnDefinition = "boolean default true")
+    private Boolean mostrarmenu = false; // Valor por defecto
+
+    public MenuOption(String codigo, String nombre, String url, String descripcion, Integer ordenVisual, AppMenu menu, boolean mostrarmenu) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.url = url;
         this.descripcion = descripcion;
         this.ordenVisual = ordenVisual;
         this.menu = menu;
+        this.mostrarmenu = mostrarmenu;
     }
 }
 

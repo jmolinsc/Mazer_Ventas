@@ -25,7 +25,7 @@ public interface MenuOptionRepository extends JpaRepository<MenuOption, Long> {
               and r.activo = true
               and o.activo = true
               and m.activo = true
-            order by m.ordenVisual asc, o.ordenVisual asc
+              order by m.ordenVisual asc, o.ordenVisual asc
             """)
     List<MenuOption> findVisibleOptionsByUsername(@Param("username") String username);
 

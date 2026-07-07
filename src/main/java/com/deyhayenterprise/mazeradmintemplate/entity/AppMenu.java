@@ -47,12 +47,16 @@ public class AppMenu {
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MenuOption> options = new LinkedHashSet<>();
 
-    public AppMenu(String codigo, String nombre, String seccion, String icono, Integer ordenVisual) {
+    @Column(columnDefinition = "boolean default true")
+    private Boolean mostrarmenu = false; // Valor por defecto
+
+    public AppMenu(String codigo, String nombre, String seccion, String icono, Integer ordenVisual, boolean mostrarmenu) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.seccion = seccion;
         this.icono = icono;
         this.ordenVisual = ordenVisual;
+        this.mostrarmenu = mostrarmenu;
     }
 }
 

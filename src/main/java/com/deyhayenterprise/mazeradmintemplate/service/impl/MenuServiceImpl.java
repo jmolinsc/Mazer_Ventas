@@ -31,7 +31,7 @@ public class MenuServiceImpl implements MenuService {
         Map<Long, List<MenuOption>> optionsByMenu = new LinkedHashMap<>();
         Map<Long, AppMenu> menus = new LinkedHashMap<>();
 
-        for (MenuOption option : menuOptionRepository.findVisibleOptionsByUsername(username)) {
+        for (MenuOption option : menuOptionRepository.findVisibleOptionsByUsername(username).stream().filter(MenuOption::getMostrarmenu).toList()) {
             AppMenu menu = option.getMenu();
             menus.putIfAbsent(menu.getId(), menu);
             optionsByMenu.computeIfAbsent(menu.getId(), key -> new ArrayList<>()).add(option);

@@ -55,6 +55,8 @@ public class RoleServiceImpl implements RoleService {
     public Set<Long> findAssignedOptionIds(Long roleId) {
         return roleRepository.findById(roleId)
                 .map(role -> role.getOptions().stream()
+                        // 🔥 FILTRO: Solo opciones con mostrarmenu = true
+                        .filter(option -> Boolean.TRUE.equals(option.getMostrarmenu()))
                         .map(MenuOption::getId)
                         .collect(Collectors.toCollection(LinkedHashSet::new)))
                 .orElseGet(LinkedHashSet::new);

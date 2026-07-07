@@ -71,6 +71,7 @@ public class MenuAdminServiceImpl implements MenuAdminService {
         option.setOrdenVisual(form.getOrdenVisual());
         option.setActivo(true);
         option.setMenu(menu);
+        option.setMostrarmenu(form.getMostrarmenu());
         return menuOptionRepository.save(option);
     }
 
